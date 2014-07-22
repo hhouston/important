@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>3585C7D9-9ABA-4A89-975E-53235AB6CAAF</string>
+	<key>IDESourceControlProjectName</key>
+	<string>ChillFratGreek</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>4F9646C0-947B-438B-90E8-A051F2A4EA24</key>
+		<string>file:///Users/hhouston/Desktop/xcode/projects/</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>ChillFratGreek/ChillFratGreek.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>4F9646C0-947B-438B-90E8-A051F2A4EA24</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>file:///Users/hhouston/Desktop/xcode/projects/</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>4F9646C0-947B-438B-90E8-A051F2A4EA24</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>4F9646C0-947B-438B-90E8-A051F2A4EA24</string>
+			<key>IDESourceControlWCCName</key>
+			<string>projects</string>
+		</dict>
+	</array>
+</dict>
+</plist>
