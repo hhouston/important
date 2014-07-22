@@ -19,6 +19,7 @@
 #import <GoogleMaps/GoogleMaps.h>
 #import "NavigationController.h"
 #import <CoreLocation/CoreLocation.h>
+#import "GMSMarkerNew.h"
 
 static CGFloat kOverlayHeight = 200.0f;
 
@@ -29,17 +30,20 @@ static CGFloat kOverlayHeight = 200.0f;
     UIImageView *radarView;
     NavigationController *navc;
     UIBarButtonItem *flyInButton_;
-    GMSMarker *fadedMarker_;
-    GMSMarker *tempMarker;
+    GMSMarkerNew *fadedMarker_;
+    GMSMarkerNew *tempMarker;
     GMSGeocoder *geocoder_;
     NSInteger *number;
     NSMutableArray *markers_;
-    BOOL ranOnce;
-    BOOL firstMarkerClick;
+    NSArray *sortedMarkerArray;
+    
     NSString *phoneNumber;
     UILabel *nameLabel;
+    UILabel *distanceLabel;
+    
     UIButton *callButton;
     NSUInteger numberOfObjects;
+    NSUInteger markerIndex;
 }
 
 @property (nonatomic, retain) UITableView *overlay_;
@@ -52,8 +56,6 @@ static CGFloat kOverlayHeight = 200.0f;
 - (void)viewDidLoad {
     [super viewDidLoad];
     //self.title = @"find a pledge";
-    ranOnce = false;
-    firstMarkerClick = false;
     navc = [[NavigationController alloc] init];
     markers_ = [[NSMutableArray alloc] init];
     geocoder_ = [[GMSGeocoder alloc] init];
@@ -131,7 +133,7 @@ static CGFloat kOverlayHeight = 200.0f;
 
 }
 
-- (void)didTapFlyIn:(GMSMarker *)marker {
+- (void)didTapFlyIn:(GMSMarkerNew *)marker {
     UIEdgeInsets padding = mapView_.padding;
 
     phoneNumber = marker.userData[@"phone"];
@@ -189,19 +191,18 @@ static CGFloat kOverlayHeight = 200.0f;
     PFQuery *query = [PFQuery queryWithClassName:@"pledges"];
     [query whereKey:@"chapterID" equalTo:self.chapterID];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-       
+        markers_ = [[NSMutableArray alloc] init];
         numberOfObjects = objects.count;
-        if (ranOnce == false ) {
-        
+        markerIndex = 0;
+        [mapView_ clear];
             if (!error) {
-            
-            ranOnce = true;
-            // The find succeeded.
+
             NSLog(@"Successfully retrieved %lu pledges.", (unsigned long)objects.count);
             // Do something with the found objects
             for (PFObject *object in objects) {
-                NSLog(@"%@", object.objectId);
-                NSLog(@"LOCATION:%@",object[@"location"]);
+                
+                //NSLog(@"%@", object.objectId);
+                //NSLog(@"LOCATION:%@",object[@"location"]);
                 PFGeoPoint *tempPoint = object[@"location"];
                 [self setMarker:tempPoint forObject:object];
             }
@@ -212,66 +213,8 @@ static CGFloat kOverlayHeight = 200.0f;
             }
             //[self.overlay_ performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
             [self stopRadar];
-            
-        } else {
-            
-            if (!error) {
-                [mapView_ clear];
-                // The find succeeded.
-                NSLog(@"Successfully retrieved %lu pledges.", (unsigned long)objects.count);
-                // Do something with the found objects
-                    GMSCoordinateBounds *bounds;
-                NSUInteger count = 0;
-                //markers_ = [[NSMutableArray alloc] init];
+        }];
 
-                for (PFObject *object in objects) {
-                    
-                    NSLog(@"%@", object.objectId);
-                    NSLog(@"LOCATION:%@",object[@"location"]);
-                    PFGeoPoint *tempPoint = object[@"location"];
-                    [self updateMarker:tempPoint forObject:object atIndex:count];
-                    count++;
-                }
-                
-                
-//                for (GMSMarker *marker in markers_) {
-//                    NSLog(@"Marker count:%lu",(unsigned long)markers_.count);
-//                    if (bounds == nil) {
-//                        bounds = [[GMSCoordinateBounds alloc] initWithCoordinate:marker.position
-//                                                                      coordinate:marker.position];
-//                    }
-//                    bounds = [bounds includingCoordinate:marker.position];
-//                }
-//                GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
-//                                                         withPadding:50.0f];
-//                [mapView_ moveCamera:update];
-                
-                
-                
-            } else {
-                // Log details of the failure
-                NSLog(@"Error: %@ %@", error, [error userInfo]);
-                
-            }
-            [self stopRadar];
-
-        }
-        
-
-    }];
-
-//    GMSCoordinateBounds *bounds;
-//    for (GMSMarker *marker in markers_) {
-//        NSLog(@"Marker count:%lu",(unsigned long)markers_.count);
-//        if (bounds == nil) {
-//            bounds = [[GMSCoordinateBounds alloc] initWithCoordinate:marker.position
-//                                                          coordinate:marker.position];
-//        }
-//        bounds = [bounds includingCoordinate:marker.position];
-//    }
-//    GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
-//                                             withPadding:50.0f];
-//    [mapView_ moveCamera:update];
 }
 
 - (void)reloadData {
@@ -295,11 +238,12 @@ static CGFloat kOverlayHeight = 200.0f;
 
     GMSReverseGeocodeCallback handler = ^(GMSReverseGeocodeResponse *response, NSError *error) {
         GMSAddress *address = response.firstResult;
+        
         if (address) {
             NSLog(@"Geocoder result: %@", address);
             
-            
-            tempMarker = [[GMSMarker alloc] init];
+
+            tempMarker = [[GMSMarkerNew alloc] init];
             //tempMarker.position = currentCoordinates;
             tempMarker.position = address.coordinate;
             tempMarker.userData = pledge;
@@ -314,119 +258,86 @@ static CGFloat kOverlayHeight = 200.0f;
                 tempMarker.snippet = [[address lines] objectAtIndex:1];
             }
             
+            
+            [markers_ addObject:tempMarker];
+
             tempMarker.map = mapView_;
 
-            [markers_ addObject:tempMarker];
             NSLog(@"setmarker1:%@\nmarker count:%lu",tempMarker,(unsigned long)markers_.count);
             
             //GMSMarker *marker = [GMSMarker markerWithPosition:address.coordinate];
             
-            if (numberOfObjects == markers_.count) {
-                [self.overlay_ reloadData];
+            if (numberOfObjects == markerIndex+1) {
+                //[self.overlay_ reloadData];
+                [self orderByDistance];
             }
             //marker.map = mapView_;
         } else {
             NSLog(@"Could not reverse geocode point (%f,%f): %@",
                   currentCoordinates.latitude, currentCoordinates.longitude, error);
             
-            tempMarker = [[GMSMarker alloc] init];
-            tempMarker.position = currentCoordinates;
-            //tempMarker.position = address.coordinate;
-            tempMarker.userData = pledge;
-            NSLog(@"phone:%@",tempMarker.userData[@"phone"]);
-            tempMarker.title = pledge[@"name"];
-            NSString *distance = @"";
-            tempMarker.snippet = [NSString stringWithFormat:@"distance=%@",distance];
-            //tempMarker.snippet = [[address lines] firstObject];
-            tempMarker.appearAnimation = kGMSMarkerAnimationPop;
-            tempMarker.map = mapView_;
             
-            [markers_ addObject:tempMarker];
-            NSLog(@"setmarker2:%@\nmarker count:%lu",tempMarker,(unsigned long)markers_.count);
-            [self.overlay_ reloadData];
-
-        }
-    };
-    [geocoder_ reverseGeocodeCoordinate:currentCoordinates completionHandler:handler];
-
-
-
-}
-
-- (void) updateMarker:(PFGeoPoint *)location forObject:(PFObject *)pledge atIndex:(NSUInteger)count {
-    
-    
-    NSLog(@"UPDATE MARKER:%@",pledge[@"name"]);
-    double latitude = location.latitude;
-    double longitude = location.longitude;
-    //GMSMarker *tempMarker =[[GMSMarker alloc] init];
-    //NSString stringWithFormat:@"%dpledge-i",number];
-
-    
-    
-    CLLocationCoordinate2D currentCoordinates = CLLocationCoordinate2DMake(latitude,longitude);
-    
-    GMSReverseGeocodeCallback handler = ^(GMSReverseGeocodeResponse *response, NSError *error) {
-        GMSAddress *address = response.firstResult;
-
-        
-        if (address) {
-            NSLog(@"Geocoder result: %@", address);
             
-            tempMarker = [[GMSMarker alloc] init];
+            tempMarker = [[GMSMarkerNew alloc] init];
             //tempMarker.position = currentCoordinates;
             tempMarker.position = address.coordinate;
             tempMarker.userData = pledge;
-            NSLog(@"phone:%@",tempMarker.userData[@"phone"]);
+            //NSLog(@"phone:%@",tempMarker.userData[@"phone"]);
             //tempMarker.title = pledge[@"name"];
             //tempMarker.snippet = @"%@3660 chevy chase (5mi) - 34s";
             //tempMarker.snippet = [[address lines] firstObject];
             tempMarker.appearAnimation = kGMSMarkerAnimationPop;
-            
-            tempMarker.title = [[address lines] firstObject];
-            if ([[address lines] count] > 1) {
-                tempMarker.snippet = [[address lines] objectAtIndex:1];
-            }
-            
-            tempMarker.map = mapView_;
-            [markers_ insertObject:tempMarker atIndex:count];
-            //[markers_ addObject:tempMarker];
-            NSLog(@"updatemarker1:%@\nmarker count:%lu",tempMarker,(unsigned long)markers_.count);
+            //tempMarker.title = pledge[@"name"];
+            NSString *distance = @"";
+            //tempMarker.snippet = [NSString stringWithFormat:@"distance=%@",distance];
 
-        } else {
-            NSLog(@"Could not reverse geocode point (%f,%f): %@",
-                  currentCoordinates.latitude, currentCoordinates.longitude, error);
             
-            tempMarker = [[GMSMarker alloc] init];
-            tempMarker.position = currentCoordinates;
-            //tempMarker.position = address.coordinate;
-            tempMarker.userData = pledge;
-            NSLog(@"phone:%@",tempMarker.userData[@"phone"]);
-            tempMarker.title = pledge[@"name"];
-            tempMarker.snippet = @"%@3660 chevy chase (5mi) - 34s";
-            //tempMarker.snippet = [[address lines] firstObject];
-            tempMarker.appearAnimation = kGMSMarkerAnimationPop;
+//            if (markerIndex + 1 == numberOfObjects) {
+//                [markers_ replaceObjectAtIndex:markerIndex withObject:tempMarker];
+//            } else {
+                [markers_ addObject:tempMarker];
+                
+            //}
             tempMarker.map = mapView_;
             
-            [markers_ addObject:tempMarker];
-            NSLog(@"updatemarker2:%@\nmarker count:%lu",tempMarker,(unsigned long)markers_.count);
+            NSLog(@"setmarker1:%@\nmarker count:%lu",tempMarker,(unsigned long)markers_.count);
             
+            //GMSMarker *marker = [GMSMarker markerWithPosition:address.coordinate];
+            
+            if (numberOfObjects == markerIndex+1) {
+                //[self.overlay_ reloadData];
+                [self orderByDistance];
+            }
+
         }
+        
+        markerIndex++;
     };
     [geocoder_ reverseGeocodeCoordinate:currentCoordinates completionHandler:handler];
 
-    
-    
-    tempMarker.position = CLLocationCoordinate2DMake(latitude,longitude);
-    tempMarker.userData = pledge;
-    NSLog(@"phone:%@",tempMarker.userData[@"phone"]);
-    tempMarker.title = pledge[@"name"];
-    tempMarker.snippet = @"3660 chevy chase (5mi) - 34s";
-    tempMarker.map = mapView_;
-    [markers_ addObject:tempMarker];
-    NSLog(@"tempMarker:%@\nmarker count:%lu",tempMarker,(unsigned long)markers_.count);
+
+
 }
 
+-(void)orderByDistance {
+    
+    for (GMSMarkerNew *marker in markers_) {
+        
+        CLLocation *markerLocation = [[CLLocation alloc] initWithLatitude:marker.position.latitude longitude:marker.position.longitude];
+        float distInMeter = [markerLocation distanceFromLocation:mapView_.myLocation]; // which returns in meters
+        float distInMile = 0.000621371192 * distInMeter;
+        NSLog(@"Actual Distance in Mile : %f",distInMile);
+        
+        marker.distance = distInMile;
+        
+        NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:@"distance" ascending:YES];
+        NSArray *sortDescriptors = [NSArray arrayWithObjects:descriptor, nil];
+        
+        sortedMarkerArray = [[NSArray alloc] init];
+        sortedMarkerArray = [markers_ sortedArrayUsingDescriptors:sortDescriptors];
+    }
+    [self reloadData];
+}
 - (void)dealloc {
     [mapView_ removeObserver:self
                   forKeyPath:@"myLocation"
@@ -448,7 +359,7 @@ static CGFloat kOverlayHeight = 200.0f;
                                                          zoom:14];
     }
 }
-- (void)fadeMarker:(GMSMarker *)marker {
+- (void)fadeMarker:(GMSMarkerNew *)marker {
     fadedMarker_.opacity = 1.0f;  // reset previous faded marker
     
     // Fade this new marker.
@@ -532,13 +443,32 @@ static CGFloat kOverlayHeight = 200.0f;
 
     }
     
-    tempMarker = [[GMSMarker alloc] init];
     
-    tempMarker = [markers_ objectAtIndex:indexPath.row];
-    cell.textLabel.text = tempMarker.userData[@"name"];
+    nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 50, 40)];
+    [nameLabel setTextColor:[UIColor blackColor]];
+    [nameLabel setBackgroundColor:[UIColor clearColor]];
+    [nameLabel setFont:[UIFont fontWithName:@"Trebuchet MS" size:14.0f]];
+    
+    
+    distanceLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 10, 50, 40)];
+    [distanceLabel setTextColor:[UIColor blackColor]];
+    [distanceLabel setBackgroundColor:[UIColor clearColor]];
+    [distanceLabel setFont:[UIFont fontWithName:@"Trebuchet MS" size:14.0f]];
+    
+    tempMarker = [[GMSMarkerNew alloc] init];
+    tempMarker = [sortedMarkerArray objectAtIndex:indexPath.row];
+    
+    //cell.textLabel.text = tempMarker.userData[@"name"];
+    nameLabel.text = tempMarker.userData[@"name"];
+    NSString *distance = [NSString stringWithFormat:@"%f",tempMarker.distance];
+    distanceLabel.text = distance;
+    
     NSLog(@"name:%@",tempMarker.userData[@"name"]);
     cell.backgroundColor = [UIColor clearColor];
 
+    
+    [cell addSubview:nameLabel];
+    [cell addSubview:distanceLabel];
     return cell;
 }
 

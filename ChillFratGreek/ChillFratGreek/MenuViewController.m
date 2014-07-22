@@ -14,7 +14,6 @@
 #import "RusheesTableViewController.h"
 #import "PledgesMapViewController.h"
 #import "WhiteboardViewController.h"
-#import "FindAPledgeViewController.h"
 #import "ProfileObject.h"
 #import "AppDelegate.h"
 #import "utilities.h"
@@ -32,7 +31,6 @@
     PledgesMapViewController *pmvc;
     HomeViewController *hvc;
     WhiteboardViewController *wvc;
-    FindAPledgeViewController *fapvc;
     ProfileObject *profileObject;
     UIButton *profileButton;
 
@@ -193,11 +191,11 @@
         
         self.frostedViewController.contentViewController = navigationController;
     } else if (indexPath.section == 0 && indexPath.row == 4) {
-        fapvc = [[FindAPledgeViewController alloc] init];
-        fapvc.chapterID = self.chapterID;
-        NavigationController *navigationController = [[NavigationController alloc ] initWithRootViewController:fapvc];
+        //fapvc = [[FindAPledgeViewController alloc] init];
+        //fapvc.chapterID = self.chapterID;
+        //NavigationController *navigationController = [[NavigationController alloc ] initWithRootViewController:fapvc];
         
-        self.frostedViewController.contentViewController = navigationController;
+        //self.frostedViewController.contentViewController = navigationController;
     }
     
     [self.frostedViewController hideMenuViewController];

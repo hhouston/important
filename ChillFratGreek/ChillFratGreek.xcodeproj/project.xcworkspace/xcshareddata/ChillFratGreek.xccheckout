@@ -5,36 +5,36 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>3585C7D9-9ABA-4A89-975E-53235AB6CAAF</string>
+	<string>8264AA27-59FD-4CB1-BC79-073E9E8660E7</string>
 	<key>IDESourceControlProjectName</key>
 	<string>ChillFratGreek</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>4F9646C0-947B-438B-90E8-A051F2A4EA24</key>
-		<string>file:///Users/hhouston/Desktop/xcode/projects/</string>
+		<key>79BE41EC-3A8A-44FE-B999-07BA2F758480</key>
+		<string>https://github.com/hhouston/important.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>ChillFratGreek/ChillFratGreek.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>4F9646C0-947B-438B-90E8-A051F2A4EA24</key>
+		<key>79BE41EC-3A8A-44FE-B999-07BA2F758480</key>
 		<string>../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>file:///Users/hhouston/Desktop/xcode/projects/</string>
+	<string>https://github.com/hhouston/important.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>110</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>4F9646C0-947B-438B-90E8-A051F2A4EA24</string>
+	<string>79BE41EC-3A8A-44FE-B999-07BA2F758480</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>4F9646C0-947B-438B-90E8-A051F2A4EA24</string>
+			<string>79BE41EC-3A8A-44FE-B999-07BA2F758480</string>
 			<key>IDESourceControlWCCName</key>
-			<string>projects</string>
+			<string>important</string>
 		</dict>
 	</array>
 </dict>

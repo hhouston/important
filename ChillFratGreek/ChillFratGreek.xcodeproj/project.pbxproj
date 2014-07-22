@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		390993AB1977456F004BB691 /* Berry.PNG in Resources */ = {isa = PBXBuildFile; fileRef = 390993AA1977456F004BB691 /* Berry.PNG */; };
 		390993AD197745E7004BB691 /* Berry@2x.PNG in Resources */ = {isa = PBXBuildFile; fileRef = 390993AC197745E7004BB691 /* Berry@2x.PNG */; };
-		391F8928197D7324002944D2 /* FindAPledgeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 391F8927197D7324002944D2 /* FindAPledgeViewController.m */; };
 		3920608D196D12B200838F86 /* avatar@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3920608C196D12B200838F86 /* avatar@2x.jpg */; };
 		3920608F196D12F600838F86 /* Balloon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3920608E196D12F600838F86 /* Balloon@2x.png */; };
 		39206093196D9ED600838F86 /* RusheeDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 39206091196D9ED600838F86 /* RusheeDetailViewController.m */; };
@@ -98,6 +97,7 @@
 		3937A375196AFE7500559AE9 /* NavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3937A374196AFE7500559AE9 /* NavigationController.m */; };
 		3937A378196AFF9C00559AE9 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3937A377196AFF9C00559AE9 /* MenuViewController.m */; };
 		3938D39C196F9EF300D10643 /* radar1.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 3938D39B196F9EF300D10643 /* radar1.pdf */; };
+		39889228197EF21700872C5F /* GMSMarkerNew.m in Sources */ = {isa = PBXBuildFile; fileRef = 39889227197EF21700872C5F /* GMSMarkerNew.m */; };
 		39912B94197C62C900AA124F /* utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 39912B93197C62C900AA124F /* utilities.m */; };
 		39B1012C1975CEDD00E7AFB5 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 39B1012B1975CEDD00E7AFB5 /* Twitter.framework */; };
 		39C2B9B419661789000362E0 /* reveal-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 39C2B9B219661789000362E0 /* reveal-icon.png */; };
@@ -168,8 +168,6 @@
 /* Begin PBXFileReference section */
 		390993AA1977456F004BB691 /* Berry.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Berry.PNG; sourceTree = "<group>"; };
 		390993AC197745E7004BB691 /* Berry@2x.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Berry@2x.PNG"; sourceTree = "<group>"; };
-		391F8926197D7324002944D2 /* FindAPledgeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindAPledgeViewController.h; sourceTree = "<group>"; };
-		391F8927197D7324002944D2 /* FindAPledgeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindAPledgeViewController.m; sourceTree = "<group>"; };
 		3920608C196D12B200838F86 /* avatar@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "avatar@2x.jpg"; sourceTree = "<group>"; };
 		3920608E196D12F600838F86 /* Balloon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Balloon@2x.png"; sourceTree = "<group>"; };
 		39206090196D9ED600838F86 /* RusheeDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RusheeDetailViewController.h; sourceTree = "<group>"; };
@@ -313,6 +311,8 @@
 		3937A376196AFF9C00559AE9 /* MenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewController.h; sourceTree = "<group>"; };
 		3937A377196AFF9C00559AE9 /* MenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewController.m; sourceTree = "<group>"; };
 		3938D39B196F9EF300D10643 /* radar1.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = radar1.pdf; sourceTree = "<group>"; };
+		39889226197EF21700872C5F /* GMSMarkerNew.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GMSMarkerNew.h; sourceTree = "<group>"; };
+		39889227197EF21700872C5F /* GMSMarkerNew.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GMSMarkerNew.m; sourceTree = "<group>"; };
 		39912B92197C62C900AA124F /* utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utilities.h; sourceTree = "<group>"; };
 		39912B93197C62C900AA124F /* utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = utilities.m; sourceTree = "<group>"; };
 		39B1012B1975CEDD00E7AFB5 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
@@ -721,8 +721,8 @@
 				39206092196D9ED600838F86 /* RusheeDetailViewController.xib */,
 				3920A098196F129B009D20BC /* PledgesMapViewController.h */,
 				3920A099196F129B009D20BC /* PledgesMapViewController.m */,
-				391F8926197D7324002944D2 /* FindAPledgeViewController.h */,
-				391F8927197D7324002944D2 /* FindAPledgeViewController.m */,
+				39889226197EF21700872C5F /* GMSMarkerNew.h */,
+				39889227197EF21700872C5F /* GMSMarkerNew.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -1018,10 +1018,10 @@
 				39E042C0196F17F300EE3A87 /* GoogleMaps.framework in Sources */,
 				3921C9501979D29A007C5E0E /* JSQMessagesTimestampFormatter.m in Sources */,
 				3921C9491979D29A007C5E0E /* UIImage+JSQMessages.m in Sources */,
-				391F8928197D7324002944D2 /* FindAPledgeViewController.m in Sources */,
 				3937A364196AFC6200559AE9 /* REFrostedContainerViewController.m in Sources */,
 				3921C9481979D29A007C5E0E /* UIColor+JSQMessages.m in Sources */,
 				3921C9861979DE2A007C5E0E /* NSDateFormatter+STTwitter.m in Sources */,
+				39889228197EF21700872C5F /* GMSMarkerNew.m in Sources */,
 				3921C9901979DE2A007C5E0E /* BAVPlistNode.m in Sources */,
 				3937A378196AFF9C00559AE9 /* MenuViewController.m in Sources */,
 				39D1A2421978877A00173E6F /* PageViewController.m in Sources */,
