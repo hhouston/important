@@ -42,6 +42,9 @@ static CGFloat kOverlayHeight = 200.0f;
     UILabel *distanceLabel;
     
     UIButton *callButton;
+    UIButton *textButton;
+    UIButton *pingButton;
+    
     NSUInteger numberOfObjects;
     NSUInteger markerIndex;
 }
@@ -132,43 +135,25 @@ static CGFloat kOverlayHeight = 200.0f;
     [self startRadar];
 
 }
-
-- (void)didTapFlyIn:(GMSMarkerNew *)marker {
-    UIEdgeInsets padding = mapView_.padding;
-
-    phoneNumber = marker.userData[@"phone"];
-    
-    callButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    callButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 40, self.view.frame.size.width, 30, 30)];
-    [callButton setBackgroundImage:[UIImage imageNamed:@"phone_icon20x.png"] forState:UIControlStateNormal];
-    [callButton addTarget:self action:@selector(callPhone) forControlEvents:UIControlEventTouchDown];
-    [self.view addSubview:callButton];
-    
-    
-
-
-        //callbutton
-        
-        [UIView animateWithDuration:1.0 animations:^{
-            
-            CGSize size = self.view.bounds.size;
-            
-                //if (padding.bottom == 0.0f) {
-            //nameLabel.text = marker.userData[@"name"];
-            //[self.overlay_ addSubview:nameLabel];
-
-            //phoneNumber = marker.userData[@"phone"];
-            //[self.overlay_ addSubview:callButton];
-
-                    self.overlay_.frame = CGRectMake(0, size.height - kOverlayHeight, size.width, kOverlayHeight);
-                    mapView_.padding = UIEdgeInsetsMake(0, 0, kOverlayHeight, 0);
-                //} else {
-                    //overlay_.frame = CGRectMake(0, mapView_.bounds.size.height, size.width, 0);
-                    //mapView_.padding = UIEdgeInsetsZero;
-                //}
-            
-        }];
-}
+//- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+//    id hitView = [super hitTest:point withEvent:event];
+//    if (point.y<0) {
+//        return nil;
+//    }
+//    return hitView;
+//}
+//
+//-(void)viewDidLayoutSubviews {
+//    [super viewDidLayoutSubviews];
+//    self.overlay_.contentInset = UIEdgeInsetsMake(self.view.frame.size.height-40, 0, 0, 0);
+//}
+//
+//- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+//    
+//    if (scrollView.contentOffset.y < self.view.frame.size.height*-1 ) {
+//        [scrollView setContentOffset:CGPointMake(scrollView.contentOffset.x, self.view.frame.size.height*-1)];
+//    }
+//}
 
 - (void) setRefreshButton {
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Refresh" style:UIBarButtonItemStylePlain target:self action:@selector(startRadar)];
@@ -380,10 +365,64 @@ static CGFloat kOverlayHeight = 200.0f;
     
 	return YES;
 }
+- (void)didTapFlyIn:(GMSMarkerNew *)marker {
+    UIEdgeInsets padding = mapView_.padding;
+    
+    phoneNumber = marker.userData[@"phone"];
+    
+    callButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    callButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 65, 80, 60, 60)];
+    [callButton setBackgroundImage:[UIImage imageNamed:@"phone_icon20x.png"] forState:UIControlStateNormal];
+    [callButton addTarget:self action:@selector(callPhone) forControlEvents:UIControlEventTouchDown];
+    callButton.alpha = 0.0;
+    [self.view addSubview:callButton];
 
+    [UIView animateWithDuration:2.0 animations:^{
+        callButton.alpha = 1.0;
+        
+    }];
+    
+    textButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    textButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 65, 100, 45, 45)];
+    [textButton setBackgroundImage:[UIImage imageNamed:@"phone_icon20x.png"] forState:UIControlStateNormal];
+    textButton.backgroundColor = [UIColor whiteColor];
+    textButton.layer.cornerRadius = 3;
+    textButton.clipsToBounds = YES;
+    [textButton addTarget:self action:@selector(callPhone) forControlEvents:UIControlEventTouchDown];
+    //textButton.alpha = 0.0;
+    [self.view addSubview:textButton];
+    
+    //callbutton
+    
+    [UIView animateWithDuration:1.0 animations:^{
+        
+        CGSize size = self.view.bounds.size;
+        
+        //if (padding.bottom == 0.0f) {
+        //nameLabel.text = marker.userData[@"name"];
+        //[self.overlay_ addSubview:nameLabel];
+        
+        //phoneNumber = marker.userData[@"phone"];
+        //[self.overlay_ addSubview:callButton];
+        
+        self.overlay_.frame = CGRectMake(0, size.height - kOverlayHeight, size.width, kOverlayHeight);
+        mapView_.padding = UIEdgeInsetsMake(0, 0, kOverlayHeight, 0);
+        //} else {
+        //overlay_.frame = CGRectMake(0, mapView_.bounds.size.height, size.width, 0);
+        //mapView_.padding = UIEdgeInsetsZero;
+        //}
+        
+    }];
+}
 
 - (void)mapView:(GMSMapView *)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
+    [UIView animateWithDuration:2.0 animations:^{
+        callButton.alpha = 0.0;
+        
+    }];
+    //[callButton removeFromSuperview];
+    
     CGSize size = self.view.bounds.size;
     [UIView animateWithDuration:1.0 animations:^{
 

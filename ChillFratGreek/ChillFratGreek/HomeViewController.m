@@ -46,7 +46,7 @@
 {
     [super viewDidLoad];
     tweetsLoaded = false;
-    [self loadTweets];
+    //[self loadTweets];
     //self.view.backgroundColor = [UIColor blackColor];
     self.view.backgroundColor = [UIColor colorWithRed:189.0/255 green:190.0/255 blue:194.0/255 alpha:1.0];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Menu"
@@ -67,9 +67,8 @@
     for (NSInteger i = 0; i < pageCount; ++i) {
         [self.scrollViews addObject:[NSNull null]];
     }
-    
-    
-    [self loadPageScrollView];
+    //[self loadTwitterScrollView];
+    //[self loadPageScrollView];
     //[self loadVisiblePages];
 
 }
@@ -198,7 +197,7 @@
     
     [twitterScrollView removeFromSuperview];
     
-    [pageScrollView addSubview:twitterScrollView];
+    [self.view addSubview:twitterScrollView];
     
 }
 
