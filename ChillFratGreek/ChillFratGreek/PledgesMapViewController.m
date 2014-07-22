@@ -139,10 +139,10 @@ static CGFloat kOverlayHeight = 200.0f;
     phoneNumber = marker.userData[@"phone"];
     
     callButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    callButton = [[UIButton alloc] initWithFrame:CGRectMake(180, 7, 30, 30)];
+    callButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 40, self.view.frame.size.width, 30, 30)];
     [callButton setBackgroundImage:[UIImage imageNamed:@"phone_icon20x.png"] forState:UIControlStateNormal];
     [callButton addTarget:self action:@selector(callPhone) forControlEvents:UIControlEventTouchDown];
-    [mapView_ addSubview:callButton];
+    [self.view addSubview:callButton];
     
     
 
@@ -366,7 +366,8 @@ static CGFloat kOverlayHeight = 200.0f;
     fadedMarker_ = marker;
     fadedMarker_.opacity = 0.5f;
 }
-- (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker
+
+- (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarkerNew *)marker
 {
     	CGPoint point = [mapView.projection pointForCoordinate:marker.position];
     	point.y = point.y - 100;
@@ -376,7 +377,6 @@ static CGFloat kOverlayHeight = 200.0f;
     	NSLog(@"tapped marker:%@",marker.userData[@"name"]);
     	mapView.selectedMarker = marker;
         [self didTapFlyIn:marker];
-    //[self fadeMarker:marker];
     
 	return YES;
 }
@@ -490,6 +490,7 @@ static CGFloat kOverlayHeight = 200.0f;
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     NSString *cellText = cell.textLabel.text;
     
+    [self mapView:mapView_ didTapMarker:sortedMarkerArray[indexPath.row]];
     
     
     
