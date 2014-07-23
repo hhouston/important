@@ -14,12 +14,15 @@
 
 // Our conversion definition
 #define DEGREES_TO_RADIANS(angle) (angle / 180.0 * M_PI)
+#define HEXCOLOR(c) [UIColor colorWithRed:((c>>24)&0xFF)/255.0 green:((c>>16)&0xFF)/255.0 blue:((c>>8)&0xFF)/255.0 alpha:((c)&0xFF)/255.0]
 
 #import "PledgesMapViewController.h"
 #import <GoogleMaps/GoogleMaps.h>
 #import "NavigationController.h"
 #import <CoreLocation/CoreLocation.h>
 #import "GMSMarkerNew.h"
+#import "MapTableViewCell.h"
+#import <QuartzCore/QuartzCore.h>
 
 static CGFloat kOverlayHeight = 200.0f;
 
@@ -69,11 +72,11 @@ static CGFloat kOverlayHeight = 200.0f;
     [nameLabel setTextColor:[UIColor blackColor]];
     [nameLabel setBackgroundColor:[UIColor clearColor]];
     [nameLabel setFont:[UIFont fontWithName:@"Trebuchet MS" size:14.0f]];
-
     
-//    callButton = [[UIButton alloc] initWithFrame:CGRectMake(60, 30, 55, 55)];
-//    [callButton setBackgroundImage:[UIImage imageNamed:@"phone_icon20x.png"] forState:UIControlStateNormal];
-//    [callButton addTarget:self action:@selector(callPhone) forControlEvents:UIControlEventTouchDown];
+    
+    //    callButton = [[UIButton alloc] initWithFrame:CGRectMake(60, 30, 55, 55)];
+    //    [callButton setBackgroundImage:[UIImage imageNamed:@"phone_icon20x.png"] forState:UIControlStateNormal];
+    //    [callButton addTarget:self action:@selector(callPhone) forControlEvents:UIControlEventTouchDown];
     //[overlay_ addSubview:callButton];
     
     
@@ -88,16 +91,16 @@ static CGFloat kOverlayHeight = 200.0f;
     //segmentControl.frame = CGRectMake(10, 50, 300, 30);
     [segmentControl addTarget:self action:@selector(segmentedControlValueDidChange:) forControlEvents:UIControlEventValueChanged];
     [segmentControl setSelectedSegmentIndex:0];
-
+    
     [self.navigationController.navigationBar.topItem setTitleView:segmentControl];
     
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithLatitude:-33.868
                                                             longitude:151.2086
                                                                  zoom:12];
-
+    
     mapView_ = [GMSMapView mapWithFrame:CGRectZero camera:camera];
     //mapView_ = [GMSMapView mapWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width) camera:camera];
-
+    
     mapView_.settings.compassButton = YES;
     mapView_.settings.myLocationButton = YES;
     mapView_.padding = UIEdgeInsetsMake(0, 0, kOverlayHeight, 0);
@@ -110,17 +113,18 @@ static CGFloat kOverlayHeight = 200.0f;
     
     //[self.view addSubview:mapView_];
     self.view = mapView_;
-
     
     
-    CGRect overlayFrame = CGRectMake(0, -kOverlayHeight,0, kOverlayHeight);
-    self.overlay_ = [[UITableView alloc] initWithFrame:overlayFrame];
+    //CGFloat height = [UIScreen mainScreen].bounds.size.height;
+    CGRect tableViewFrame = CGRectMake(0, -kOverlayHeight,0, kOverlayHeight);
+    //CGRect tableViewFrame = CGRectMake(0, -height, 0, height);
+    self.overlay_ = [[UITableView alloc] initWithFrame:tableViewFrame];
     self.overlay_.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
     self.overlay_.dataSource = self;
     self.overlay_.delegate = self;
-
-    self.overlay_.backgroundColor = [UIColor colorWithRed:(0/255.0) green:(113/255.0) blue:(188/255.0) alpha:.7];
-
+    self.overlay_.backgroundColor = [UIColor clearColor];
+    //self.overlay_.backgroundColor = [UIColor colorWithRed:(125/255.0) green:(38/255.0) blue:(205/255.0) alpha:.9];
+    //self.overlay_.backgroundColor = HEXCOLOR(663399);
     [self.view addSubview:self.overlay_];
     
     //[overlay_ setHidden:YES];
@@ -133,7 +137,7 @@ static CGFloat kOverlayHeight = 200.0f;
     
     
     [self startRadar];
-
+    
 }
 //- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
 //    id hitView = [super hitTest:point withEvent:event];
@@ -149,14 +153,14 @@ static CGFloat kOverlayHeight = 200.0f;
 //}
 //
 //- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
-//    
+//
 //    if (scrollView.contentOffset.y < self.view.frame.size.height*-1 ) {
 //        [scrollView setContentOffset:CGPointMake(scrollView.contentOffset.x, self.view.frame.size.height*-1)];
 //    }
 //}
 
 - (void) setRefreshButton {
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Refresh" style:UIBarButtonItemStylePlain target:self action:@selector(startRadar)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Refresh" style:UIBarButtonItemStylePlain target:self action:@selector(startRadar)];
 }
 
 
@@ -164,26 +168,27 @@ static CGFloat kOverlayHeight = 200.0f;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"stop" style:UIBarButtonItemStylePlain target:self action:@selector(stopRadar)];
     
     radarView = [[UIImageView alloc] initWithFrame:CGRectMake(220, 75, 90,90)];
-
-
     radarView.image = [UIImage imageNamed:@"blue radar one circle 90x.png"];
-    //radarView.center =
     [mapView_ addSubview:radarView];
     [self rotateImage:radarView duration:2.0
                 curve:UIViewAnimationCurveEaseIn degrees:180];
+    
+    sortedMarkerArray = [[NSMutableArray alloc] init];
+    markers_ = [[NSMutableArray alloc] init];
+    markerIndex = 0;
+    [mapView_ clear];
     
     
     PFQuery *query = [PFQuery queryWithClassName:@"pledges"];
     [query whereKey:@"chapterID" equalTo:self.chapterID];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        markers_ = [[NSMutableArray alloc] init];
         numberOfObjects = objects.count;
-        markerIndex = 0;
-        [mapView_ clear];
-            if (!error) {
-
+        
+        
+        if (!error) {
+            
             NSLog(@"Successfully retrieved %lu pledges.", (unsigned long)objects.count);
-            // Do something with the found objects
+            
             for (PFObject *object in objects) {
                 
                 //NSLog(@"%@", object.objectId);
@@ -191,21 +196,17 @@ static CGFloat kOverlayHeight = 200.0f;
                 PFGeoPoint *tempPoint = object[@"location"];
                 [self setMarker:tempPoint forObject:object];
             }
-            } else {
+        } else {
             // Log details of the failure
             NSLog(@"Error: %@ %@", error, [error userInfo]);
-       
-            }
-            //[self.overlay_ performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
-            [self stopRadar];
-        }];
-
+            
+        }
+        //[self.overlay_ performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+        [self stopRadar];
+    }];
+    
 }
 
-- (void)reloadData {
-    [self.overlay_ reloadData];
-
-}
 
 - (void)stopRadar {
     [self setRefreshButton];
@@ -218,16 +219,16 @@ static CGFloat kOverlayHeight = 200.0f;
     //GMSMarker *tempMarker =[[GMSMarker alloc] init];
     //NSString stringWithFormat:@"%dpledge-i",number];
     NSLog(@"SET MARKER:%@",pledge[@"name"]);
-
+    
     CLLocationCoordinate2D currentCoordinates = CLLocationCoordinate2DMake(latitude,longitude);
-
+    
     GMSReverseGeocodeCallback handler = ^(GMSReverseGeocodeResponse *response, NSError *error) {
         GMSAddress *address = response.firstResult;
         
         if (address) {
-            NSLog(@"Geocoder result: %@", address);
+            //NSLog(@"Geocoder result: %@", address);
             
-
+            
             tempMarker = [[GMSMarkerNew alloc] init];
             //tempMarker.position = currentCoordinates;
             tempMarker.position = address.coordinate;
@@ -245,10 +246,10 @@ static CGFloat kOverlayHeight = 200.0f;
             
             
             [markers_ addObject:tempMarker];
-
+            
             tempMarker.map = mapView_;
-
-            NSLog(@"setmarker1:%@\nmarker count:%lu",tempMarker,(unsigned long)markers_.count);
+            
+            NSLog(@"setmarker1:%@\nmarker name:%@",tempMarker,tempMarker.userData[@"name"]);
             
             //GMSMarker *marker = [GMSMarker markerWithPosition:address.coordinate];
             
@@ -258,8 +259,7 @@ static CGFloat kOverlayHeight = 200.0f;
             }
             //marker.map = mapView_;
         } else {
-            NSLog(@"Could not reverse geocode point (%f,%f): %@",
-                  currentCoordinates.latitude, currentCoordinates.longitude, error);
+            //NSLog(@"Could not reverse geocode point (%f,%f): %@", currentCoordinates.latitude, currentCoordinates.longitude, error);
             
             
             
@@ -275,17 +275,17 @@ static CGFloat kOverlayHeight = 200.0f;
             //tempMarker.title = pledge[@"name"];
             NSString *distance = @"";
             //tempMarker.snippet = [NSString stringWithFormat:@"distance=%@",distance];
-
             
-//            if (markerIndex + 1 == numberOfObjects) {
-//                [markers_ replaceObjectAtIndex:markerIndex withObject:tempMarker];
-//            } else {
-                [markers_ addObject:tempMarker];
-                
+            
+            //            if (markerIndex + 1 == numberOfObjects) {
+            //                [markers_ replaceObjectAtIndex:markerIndex withObject:tempMarker];
+            //            } else {
+            [markers_ addObject:tempMarker];
+            
             //}
             tempMarker.map = mapView_;
             
-            NSLog(@"setmarker1:%@\nmarker count:%lu",tempMarker,(unsigned long)markers_.count);
+            NSLog(@"setmarker2:%@\nmarker name:%@",tempMarker,tempMarker.userData[@"name"]);
             
             //GMSMarker *marker = [GMSMarker markerWithPosition:address.coordinate];
             
@@ -293,15 +293,15 @@ static CGFloat kOverlayHeight = 200.0f;
                 //[self.overlay_ reloadData];
                 [self orderByDistance];
             }
-
+            
         }
         
         markerIndex++;
     };
     [geocoder_ reverseGeocodeCoordinate:currentCoordinates completionHandler:handler];
-
-
-
+    
+    
+    
 }
 
 -(void)orderByDistance {
@@ -311,7 +311,7 @@ static CGFloat kOverlayHeight = 200.0f;
         CLLocation *markerLocation = [[CLLocation alloc] initWithLatitude:marker.position.latitude longitude:marker.position.longitude];
         float distInMeter = [markerLocation distanceFromLocation:mapView_.myLocation]; // which returns in meters
         float distInMile = 0.000621371192 * distInMeter;
-        NSLog(@"Actual Distance in Mile : %f",distInMile);
+        //NSLog(@"Actual Distance in Mile : %f",distInMile);
         
         marker.distance = distInMile;
         
@@ -320,8 +320,11 @@ static CGFloat kOverlayHeight = 200.0f;
         
         sortedMarkerArray = [[NSArray alloc] init];
         sortedMarkerArray = [markers_ sortedArrayUsingDescriptors:sortDescriptors];
+        
     }
-    [self reloadData];
+    NSLog(@"ordered array:%@",sortedMarkerArray);
+    [self.overlay_ reloadData];
+    
 }
 - (void)dealloc {
     [mapView_ removeObserver:self
@@ -344,6 +347,7 @@ static CGFloat kOverlayHeight = 200.0f;
                                                          zoom:14];
     }
 }
+
 - (void)fadeMarker:(GMSMarkerNew *)marker {
     fadedMarker_.opacity = 1.0f;  // reset previous faded marker
     
@@ -352,47 +356,96 @@ static CGFloat kOverlayHeight = 200.0f;
     fadedMarker_.opacity = 0.5f;
 }
 
+#pragma mark - button methods
+
 - (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarkerNew *)marker
 {
-    	CGPoint point = [mapView.projection pointForCoordinate:marker.position];
-    	point.y = point.y - 100;
-    	GMSCameraUpdate *camera =
-        [GMSCameraUpdate setTarget:[mapView.projection coordinateForPoint:point]];
-    	[mapView animateWithCameraUpdate:camera];
-    	NSLog(@"tapped marker:%@",marker.userData[@"name"]);
-    	mapView.selectedMarker = marker;
-        [self didTapFlyIn:marker];
+    CGPoint point = [mapView.projection pointForCoordinate:marker.position];
+    point.y = point.y - 100;
+    GMSCameraUpdate *camera =
+    [GMSCameraUpdate setTarget:[mapView.projection coordinateForPoint:point]];
+    [mapView animateWithCameraUpdate:camera];
+    NSLog(@"tapped marker:%@",marker.userData[@"name"]);
+    mapView.selectedMarker = marker;
+    [self didTapFlyIn:marker];
     
 	return YES;
 }
+
 - (void)didTapFlyIn:(GMSMarkerNew *)marker {
     UIEdgeInsets padding = mapView_.padding;
     
     phoneNumber = marker.userData[@"phone"];
     
-    callButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    callButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 65, 80, 60, 60)];
-    [callButton setBackgroundImage:[UIImage imageNamed:@"phone_icon20x.png"] forState:UIControlStateNormal];
-    [callButton addTarget:self action:@selector(callPhone) forControlEvents:UIControlEventTouchDown];
+    callButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    callButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 53, 150, 40, 40)];
+    //[textButton setBackgroundImage:[UIImage imageNamed:@"phone_icon20x.png"] forState:UIControlStateNormal];
+    callButton.backgroundColor = [UIColor whiteColor];
+    callButton.layer.cornerRadius = 4;
+    [callButton.layer setBorderColor:[UIColor blackColor].CGColor];
+    [callButton.layer setBorderWidth:.20f];
+    callButton.clipsToBounds = YES;
+    callButton.layer.shadowColor = [UIColor blackColor].CGColor;
+    callButton.layer.shadowOffset = CGSizeMake(0.0f,0.50f);
+    callButton.layer.masksToBounds = NO;
+    callButton.layer.shadowRadius = 1.7f;
+    callButton.layer.shadowOpacity = .25;
+    [callButton setBackgroundImage:[self imageWithColor:[UIColor grayColor]] forState:UIControlStateHighlighted];
+    [callButton addTarget:self action:@selector(callPhone) forControlEvents:UIControlEventTouchUpInside];
     callButton.alpha = 0.0;
     [self.view addSubview:callButton];
-
+    
     [UIView animateWithDuration:2.0 animations:^{
-        callButton.alpha = 1.0;
+        callButton.alpha = .85;
         
     }];
     
-    textButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    textButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 65, 100, 45, 45)];
-    [textButton setBackgroundImage:[UIImage imageNamed:@"phone_icon20x.png"] forState:UIControlStateNormal];
+    
+    textButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    textButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 53, 200, 40, 40)];
+    //[textButton setBackgroundImage:[UIImage imageNamed:@"phone_icon20x.png"] forState:UIControlStateNormal];
     textButton.backgroundColor = [UIColor whiteColor];
-    textButton.layer.cornerRadius = 3;
+    textButton.layer.cornerRadius = 4;
+    [textButton.layer setBorderColor:[UIColor blackColor].CGColor];
+    [textButton.layer setBorderWidth:.20f];
     textButton.clipsToBounds = YES;
-    [textButton addTarget:self action:@selector(callPhone) forControlEvents:UIControlEventTouchDown];
-    //textButton.alpha = 0.0;
+    textButton.layer.shadowColor = [UIColor blackColor].CGColor;
+    textButton.layer.shadowOffset = CGSizeMake(0.0f,0.50f);
+    textButton.layer.masksToBounds = NO;
+    textButton.layer.shadowRadius = 1.7f;
+    textButton.layer.shadowOpacity = .25;
+    [textButton setBackgroundImage:[self imageWithColor:[UIColor grayColor]] forState:UIControlStateHighlighted];
+    [textButton addTarget:self action:@selector(textPhone) forControlEvents:UIControlEventTouchUpInside];
+    textButton.alpha = 0.0;
     [self.view addSubview:textButton];
     
-    //callbutton
+    [UIView animateWithDuration:2.0 animations:^{
+        textButton.alpha = .85;
+        
+    }];
+
+    pingButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    pingButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 53, 250, 40, 40)];
+    //[textButton setBackgroundImage:[UIImage imageNamed:@"phone_icon20x.png"] forState:UIControlStateNormal];
+    pingButton.backgroundColor = [UIColor whiteColor];
+    pingButton.layer.cornerRadius = 4;
+    [pingButton.layer setBorderColor:[UIColor blackColor].CGColor];
+    [pingButton.layer setBorderWidth:.20f];
+    pingButton.clipsToBounds = YES;
+    pingButton.layer.shadowColor = [UIColor blackColor].CGColor;
+    pingButton.layer.shadowOffset = CGSizeMake(0.0f,0.50f);
+    pingButton.layer.masksToBounds = NO;
+    pingButton.layer.shadowRadius = 1.7f;
+    pingButton.layer.shadowOpacity = .25;
+    [pingButton setBackgroundImage:[self imageWithColor:[UIColor grayColor]] forState:UIControlStateHighlighted];
+    [pingButton addTarget:self action:@selector(pingPhone) forControlEvents:UIControlEventTouchUpInside];
+    pingButton.alpha = 0.0;
+    [self.view addSubview:pingButton];
+    
+    [UIView animateWithDuration:2.0 animations:^{
+        pingButton.alpha = .85;
+        
+    }];
     
     [UIView animateWithDuration:1.0 animations:^{
         
@@ -415,26 +468,58 @@ static CGFloat kOverlayHeight = 200.0f;
     }];
 }
 
+-(void)callPhone {
+    
+    NSString *fullNumber = [NSString stringWithFormat:@"tel:%@",phoneNumber];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:fullNumber]];
+}
+
+-(void)textPhone {
+    
+    NSString *fullNumber = [NSString stringWithFormat:@"tel:%@",phoneNumber];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:fullNumber]];
+}
+
+-(void)pingPhone {
+    
+    NSString *fullNumber = [NSString stringWithFormat:@"tel:%@",phoneNumber];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:fullNumber]];
+}
+
+- (UIImage *)imageWithColor:(UIColor *)color {
+    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGContextSetFillColorWithColor(context, [color CGColor]);
+    CGContextFillRect(context, rect);
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return image;
+}
+
 - (void)mapView:(GMSMapView *)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
     [UIView animateWithDuration:2.0 animations:^{
         callButton.alpha = 0.0;
-        
+        textButton.alpha = 0.0;
+        pingButton.alpha = 0.0;
     }];
-    //[callButton removeFromSuperview];
     
     CGSize size = self.view.bounds.size;
     [UIView animateWithDuration:1.0 animations:^{
-
-    self.overlay_.frame = CGRectMake(0, mapView_.bounds.size.height, size.width, 0);
-    mapView_.padding = UIEdgeInsetsZero;
+        
+        self.overlay_.frame = CGRectMake(0, mapView_.bounds.size.height, size.width, 0);
+        mapView_.padding = UIEdgeInsetsZero;
         
     }];
-//    for (int x = 0; x < mapView_.markers.count; x++)
-//    {
-//        GMSMarker * tempMarker = mapView_.markers[x];
-//        tempMarker.tappable = YES;
-//    }
+    //    for (int x = 0; x < mapView_.markers.count; x++)
+    //    {
+    //        GMSMarker * tempMarker = mapView_.markers[x];
+    //        tempMarker.tappable = YES;
+    //    }
 }
 
 - (void)rotateImage:(UIImageView *)image duration:(NSTimeInterval)duration
@@ -461,57 +546,39 @@ static CGFloat kOverlayHeight = 200.0f;
     }
 }
 
--(void)callPhone {
-    NSString *fullNumber = [NSString stringWithFormat:@"tel:%@",phoneNumber];
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:fullNumber]];
-}
 
+#pragma mark - Table view data source
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *simpleTableIdentifier = @"SimpleTableItem";
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
-    
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
-    }
-    
-    if (markers_.count == 0) {
-        return cell;
-        cell.backgroundColor = [UIColor clearColor];
 
+    MapTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
+    if (cell == nil) {
+        
+        cell = [[MapTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
+        cell = [[[NSBundle mainBundle] loadNibNamed:@"MapTableViewCell" owner:nil options:nil] objectAtIndex:0];
+        cell.backgroundColor = [UIColor colorWithRed:(125/255.0) green:(38/255.0) blue:(205/255.0) alpha:.3];
+        cell.layer.cornerRadius = 5.0;
+        [cell setClipsToBounds:YES];
+        //cell.backgroundColor = [UIColor clearColor];
+        cell.separatorInset = UIEdgeInsetsMake(0, 50, 0, 0);
     }
-    
-    
-    nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 50, 40)];
-    [nameLabel setTextColor:[UIColor blackColor]];
-    [nameLabel setBackgroundColor:[UIColor clearColor]];
-    [nameLabel setFont:[UIFont fontWithName:@"Trebuchet MS" size:14.0f]];
-    
-    
-    distanceLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 10, 50, 40)];
-    [distanceLabel setTextColor:[UIColor blackColor]];
-    [distanceLabel setBackgroundColor:[UIColor clearColor]];
-    [distanceLabel setFont:[UIFont fontWithName:@"Trebuchet MS" size:14.0f]];
     
     tempMarker = [[GMSMarkerNew alloc] init];
     tempMarker = [sortedMarkerArray objectAtIndex:indexPath.row];
     
-    //cell.textLabel.text = tempMarker.userData[@"name"];
-    nameLabel.text = tempMarker.userData[@"name"];
+    cell.nameLabel.text = tempMarker.userData[@"name"];
     NSString *distance = [NSString stringWithFormat:@"%f",tempMarker.distance];
-    distanceLabel.text = distance;
+    cell.distance.text = distance;
+    cell.address.text = tempMarker.title;
+    cell.distance.textColor = [UIColor blackColor];
     
     NSLog(@"name:%@",tempMarker.userData[@"name"]);
-    cell.backgroundColor = [UIColor clearColor];
-
+    //cell.backgroundColor = [UIColor clearColor];
+    //cell.backgroundColor = [UIColor colorWithRed:(0/255.0) green:(113/255.0) blue:(188/255.0) alpha:.7];
     
-    [cell addSubview:nameLabel];
-    [cell addSubview:distanceLabel];
     return cell;
 }
-
-#pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -531,27 +598,8 @@ static CGFloat kOverlayHeight = 200.0f;
     
     [self mapView:mapView_ didTapMarker:sortedMarkerArray[indexPath.row]];
     
-    
-    
-    
-    //RusheeDetailViewController *rusheeDetailViewController = [[RusheeDetailViewController alloc]
-//                                                              initWithNibName:@"RusheeDetailViewController"
-//                                                              bundle:nil];
-//    rusheeDetailViewController.rusheeObj =  [self.objects objectAtIndex:(NSUInteger)indexPath.row];
-    // ...
-    // Pass the selected object to the new view controller.
-    //[self.navigationController pushViewController:rusheeDetailViewController animated:YES];
-    
-    
-    //    if (0 == indexPath.row)
-    //    {
-    //        rusheeDetailViewController.title = @"one";
-    //    } else {
-    //        rusheeDetailViewController.title = @"two";
-    //    }
-//    [self.navigationController
-//     pushViewController:rusheeDetailViewController
-//     animated:YES];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
 }
 
 

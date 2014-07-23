@@ -27,7 +27,8 @@
 //                             forBarMetrics:UIBarMetricsDefault];
 //    self.navigationBar.shadowImage = [UIImage new];
 //    self.navigationBar.translucent = YES;
-//    [self.view addGestureRecognizer:[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)]];
+    
+    [self.view addGestureRecognizer:[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)]];
 }
 
 - (void)showMenu

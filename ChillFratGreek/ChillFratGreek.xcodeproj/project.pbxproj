@@ -97,6 +97,8 @@
 		3937A375196AFE7500559AE9 /* NavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3937A374196AFE7500559AE9 /* NavigationController.m */; };
 		3937A378196AFF9C00559AE9 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3937A377196AFF9C00559AE9 /* MenuViewController.m */; };
 		3938D39C196F9EF300D10643 /* radar1.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 3938D39B196F9EF300D10643 /* radar1.pdf */; };
+		3984411C197F403000657050 /* MapTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3984411A197F403000657050 /* MapTableViewCell.m */; };
+		3984411D197F403000657050 /* MapTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3984411B197F403000657050 /* MapTableViewCell.xib */; };
 		39889228197EF21700872C5F /* GMSMarkerNew.m in Sources */ = {isa = PBXBuildFile; fileRef = 39889227197EF21700872C5F /* GMSMarkerNew.m */; };
 		39912B94197C62C900AA124F /* utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 39912B93197C62C900AA124F /* utilities.m */; };
 		39B1012C1975CEDD00E7AFB5 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 39B1012B1975CEDD00E7AFB5 /* Twitter.framework */; };
@@ -311,6 +313,9 @@
 		3937A376196AFF9C00559AE9 /* MenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewController.h; sourceTree = "<group>"; };
 		3937A377196AFF9C00559AE9 /* MenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewController.m; sourceTree = "<group>"; };
 		3938D39B196F9EF300D10643 /* radar1.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = radar1.pdf; sourceTree = "<group>"; };
+		39844119197F403000657050 /* MapTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapTableViewCell.h; sourceTree = "<group>"; };
+		3984411A197F403000657050 /* MapTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapTableViewCell.m; sourceTree = "<group>"; };
+		3984411B197F403000657050 /* MapTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MapTableViewCell.xib; sourceTree = "<group>"; };
 		39889226197EF21700872C5F /* GMSMarkerNew.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GMSMarkerNew.h; sourceTree = "<group>"; };
 		39889227197EF21700872C5F /* GMSMarkerNew.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GMSMarkerNew.m; sourceTree = "<group>"; };
 		39912B92197C62C900AA124F /* utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utilities.h; sourceTree = "<group>"; };
@@ -721,10 +726,22 @@
 				39206092196D9ED600838F86 /* RusheeDetailViewController.xib */,
 				3920A098196F129B009D20BC /* PledgesMapViewController.h */,
 				3920A099196F129B009D20BC /* PledgesMapViewController.m */,
-				39889226197EF21700872C5F /* GMSMarkerNew.h */,
-				39889227197EF21700872C5F /* GMSMarkerNew.m */,
 			);
 			name = Controllers;
+			sourceTree = "<group>";
+		};
+		39844118197F3FDE00657050 /* objects */ = {
+			isa = PBXGroup;
+			children = (
+				39DB04F1197204F300E80D5B /* ProfileObject.h */,
+				39DB04F2197204F300E80D5B /* ProfileObject.m */,
+				39889226197EF21700872C5F /* GMSMarkerNew.h */,
+				39889227197EF21700872C5F /* GMSMarkerNew.m */,
+				39844119197F403000657050 /* MapTableViewCell.h */,
+				3984411A197F403000657050 /* MapTableViewCell.m */,
+				3984411B197F403000657050 /* MapTableViewCell.xib */,
+			);
+			name = objects;
 			sourceTree = "<group>";
 		};
 		39912B91197C62C900AA124F /* Utilities */ = {
@@ -822,9 +839,8 @@
 				39C7E67C1965B71C00F5F08F /* AppDelegate.h */,
 				39C7E67D1965B71C00F5F08F /* AppDelegate.m */,
 				39DB04F419723EDD00E80D5B /* ProfileModel.xcdatamodeld */,
-				39DB04F1197204F300E80D5B /* ProfileObject.h */,
-				39DB04F2197204F300E80D5B /* ProfileObject.m */,
 				39C7E67F1965B71C00F5F08F /* Main.storyboard */,
+				39844118197F3FDE00657050 /* objects */,
 				39912B91197C62C900AA124F /* Utilities */,
 				3921C9681979DE2A007C5E0E /* STTwitter */,
 				3921C8D51979D299007C5E0E /* Vendor */,
@@ -955,6 +971,7 @@
 				3921C9661979D29A007C5E0E /* ProgressHUD.bundle in Resources */,
 				3921C95B1979D29A007C5E0E /* JSQMessagesCollectionViewCellOutgoing.xib in Resources */,
 				39F8290B197463F100CEC72E /* test blue radar 512x.png in Resources */,
+				3984411D197F403000657050 /* MapTableViewCell.xib in Resources */,
 				3921C94D1979D29A007C5E0E /* JSQMessagesViewController.xib in Resources */,
 				39F8290F1974655A00CEC72E /* blue_radar_90x.png in Resources */,
 				39C2B9B519661789000362E0 /* reveal-icon@2x.png in Resources */,
@@ -1016,6 +1033,7 @@
 				3921C98A1979DE2A007C5E0E /* STTwitterAPI.m in Sources */,
 				3921C9881979DE2A007C5E0E /* NSString+STTwitter.m in Sources */,
 				39E042C0196F17F300EE3A87 /* GoogleMaps.framework in Sources */,
+				3984411C197F403000657050 /* MapTableViewCell.m in Sources */,
 				3921C9501979D29A007C5E0E /* JSQMessagesTimestampFormatter.m in Sources */,
 				3921C9491979D29A007C5E0E /* UIImage+JSQMessages.m in Sources */,
 				3937A364196AFC6200559AE9 /* REFrostedContainerViewController.m in Sources */,
