@@ -31,45 +31,46 @@
 @end
 
 @implementation HomeViewController {
-    UIImageView *imageView;
     UIScrollView *twitterScrollView;
     UIScrollView *chatBottomScrollView;
     UIScrollView *pageScrollView;
     UIPageControl *pageControl;
     BOOL tweetsLoaded;
-
-
+    UIImageView *imageView;
+    
+    UIImage *menuImage;
+    UIImage *settingsImage;
+    
 }
 
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     tweetsLoaded = false;
     //[self loadTweets];
-    //self.view.backgroundColor = [UIColor blackColor];
-    self.view.backgroundColor = [UIColor colorWithRed:189.0/255 green:190.0/255 blue:194.0/255 alpha:1.0];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Menu"
-                                                                             style:UIBarButtonItemStylePlain
-                                                                            target:(NavigationController *)self.navigationController
-                                                                            action:@selector(showMenu)];
+    self.view.backgroundColor = [UIColor blackColor];
+    //self.view.backgroundColor = [UIColor colorWithRed:189.0/255 green:190.0/255 blue:194.0/255 alpha:1.0];
+
+    menuImage = [[UIImage imageNamed:@"menu32x.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:menuImage style:UIBarButtonItemStylePlain target:(NavigationController *)self.navigationController action:@selector(showMenu)];
+
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Settings"
-                                                                             style:UIBarButtonItemStylePlain
-                                                                            target:self
-                                                                            action:@selector(showMenu)];
-    //NSInteger pageCount = 3;
+    settingsImage = [[UIImage imageNamed:@"cog.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:settingsImage style:UIBarButtonItemStylePlain target:(NavigationController *)self.navigationController action:@selector(showSettings)];
+//
+//    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Settings"
+//                                                                             style:UIBarButtonItemStylePlain
+//                                                                            target:self
+//                                                                            action:@selector(showMenu)];
+
+    imageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+    imageView.image = [UIImage imageNamed:@"Phi_Gam"];
+    //imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    imageView.contentMode = UIViewContentModeCenter;
+    [self.view addSubview:imageView];
     
-    pageControl.currentPage = 0;
-    pageControl.numberOfPages = pageCount;
-    
-    self.scrollViews = [[NSMutableArray alloc] init];
-    for (NSInteger i = 0; i < pageCount; ++i) {
-        [self.scrollViews addObject:[NSNull null]];
-    }
-    //[self loadTwitterScrollView];
-    //[self loadPageScrollView];
-    //[self loadVisiblePages];
 
 }
 - (void)viewWillAppear:(BOOL)animated {

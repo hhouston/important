@@ -379,7 +379,7 @@ static CGFloat kOverlayHeight = 200.0f;
     
     callButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     callButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 53, 150, 40, 40)];
-    //[textButton setBackgroundImage:[UIImage imageNamed:@"phone_icon20x.png"] forState:UIControlStateNormal];
+    //[callButton setBackgroundImage:[UIImage imageNamed:@"purple_phone"] forState:UIControlStateNormal];
     callButton.backgroundColor = [UIColor whiteColor];
     callButton.layer.cornerRadius = 4;
     [callButton.layer setBorderColor:[UIColor blackColor].CGColor];
@@ -394,6 +394,12 @@ static CGFloat kOverlayHeight = 200.0f;
     [callButton addTarget:self action:@selector(callPhone) forControlEvents:UIControlEventTouchUpInside];
     callButton.alpha = 0.0;
     [self.view addSubview:callButton];
+    
+    UIImageView *phone= [[UIImageView alloc] initWithFrame:CGRectMake(5, 5, 30, 30)];
+    phone.image = [UIImage imageNamed:@"phone_grey.png"];
+    //phone.contentMode = UIViewContentModeCenter;
+
+    [callButton addSubview:phone];
     
     [UIView animateWithDuration:2.0 animations:^{
         callButton.alpha = .85;
@@ -418,6 +424,10 @@ static CGFloat kOverlayHeight = 200.0f;
     [textButton addTarget:self action:@selector(textPhone) forControlEvents:UIControlEventTouchUpInside];
     textButton.alpha = 0.0;
     [self.view addSubview:textButton];
+    
+    UIImageView *chatBubble= [[UIImageView alloc] initWithFrame:CGRectMake(5, 5, 30, 30)];
+    chatBubble.image = [UIImage imageNamed:@"bubble_full50x.png"];
+    [textButton addSubview:chatBubble];
     
     [UIView animateWithDuration:2.0 animations:^{
         textButton.alpha = .85;
