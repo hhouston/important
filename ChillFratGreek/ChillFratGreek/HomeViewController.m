@@ -53,11 +53,11 @@
     self.view.backgroundColor = [UIColor blackColor];
     //self.view.backgroundColor = [UIColor colorWithRed:189.0/255 green:190.0/255 blue:194.0/255 alpha:1.0];
 
-    menuImage = [[UIImage imageNamed:@"menu32x.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    menuImage = [[UIImage imageNamed:@"menu.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:menuImage style:UIBarButtonItemStylePlain target:(NavigationController *)self.navigationController action:@selector(showMenu)];
 
     
-    settingsImage = [[UIImage imageNamed:@"cog.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    settingsImage = [[UIImage imageNamed:@"cog2.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:settingsImage style:UIBarButtonItemStylePlain target:(NavigationController *)self.navigationController action:@selector(showSettings)];
 //
 //    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Settings"
@@ -125,6 +125,9 @@
         twitterScrollView.backgroundColor = [UIColor colorWithRed:(0/255.0) green:(113/255.0) blue:(188/255.0) alpha:.7];
         twitterScrollView.pagingEnabled = NO;
         twitterScrollView.delegate = self;
+        
+        
+        
     }
     //lets create 10 views
     //NSInteger numberOfViews = 10;

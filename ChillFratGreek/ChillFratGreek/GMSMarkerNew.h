@@ -12,5 +12,8 @@
 @interface GMSMarkerNew : GMSMarker
 
 @property (assign, nonatomic) float distance;
+@property (strong, nonatomic) NSString *address;
+@property (strong, nonatomic) NSString *address2;
+@property (assign, nonatomic) NSUInteger markerIndex;
 
 @end

@@ -10,7 +10,8 @@
 
 @interface MapTableViewCell : UITableViewCell
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
-@property (weak, nonatomic) IBOutlet UILabel *address;
+//@property (weak, nonatomic) IBOutlet UILabel *address;
 @property (weak, nonatomic) IBOutlet UILabel *distance;
+//@property (weak, nonatomic) IBOutlet UILabel *address2;
 
 @end
