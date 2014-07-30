@@ -29,6 +29,7 @@
 #import "UIView+REFrostedViewController.h"
 #import "UIViewController+REFrostedViewController.h"
 #import "RECommonFunctions.h"
+#import "SWRevealViewController.h"
 
 @interface REFrostedViewController ()
 
@@ -89,6 +90,7 @@
     if (self) {
         _contentViewController = contentViewController;
         _menuViewController = menuViewController;
+        //_menuViewController.delegate = self;
     }
     return self;
 }
@@ -97,6 +99,7 @@
 {
     [super viewDidLoad];
     [self re_displayController:self.contentViewController frame:self.view.bounds];
+    
 }
 
 - (UIViewController *)childViewControllerForStatusBarStyle

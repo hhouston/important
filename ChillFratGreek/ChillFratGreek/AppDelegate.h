@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "REFrostedViewController.h"
+#import "SWRevealViewController/SWRevealViewController.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, REFrostedViewControllerDelegate>
 
@@ -19,4 +20,6 @@
 @property (nonatomic, retain, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
 - (NSArray *)getProfiles;
+
+
 @end

@@ -16,5 +16,5 @@
 @property (strong, nonatomic) NSString *alias;
 @property (strong, nonatomic) NSString *chapterID;
 @property (assign, nonatomic) NSInteger index;
-
+@property (strong, nonatomic) UITableView *chatTableView;
 @end

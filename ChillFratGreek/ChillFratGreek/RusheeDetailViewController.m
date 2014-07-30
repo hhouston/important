@@ -27,12 +27,33 @@
 {
     [super viewDidLoad];
     
-    NSLog(@"object did pass name: %@",self.rusheeObj[@"name"]);
-    self.title = self.rusheeObj[@"name"];
+    [self.additionalInfoView.layer setCornerRadius:5.0];
+    
+    PFFile *thumbnail = self.rusheeObj[@"avatar"];
+    [thumbnail getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+        UIImage *avatar = [UIImage imageWithData:data];
+        self.rusheeProfilePic.image = avatar;
+        
+    }];
+    
+    self.rusheeProfilePic.image = [UIImage imageNamed:@"user"];
+    
+    
+    NSLog(@"object did pass name: %@",self.rusheeObj[@"firstName"]);
+    self.title = [self.rusheeObj objectForKey:@"firstName"];
+    self.rusheeFirstName.text = self.rusheeObj[@"firstName"];
+    self.rusheeLastName.text = self.rusheeObj[@"lastName"];
+    self.hometown.text = self.rusheeObj[@"hometown"];
+    self.cellPhoneNumber.text = self.rusheeObj[@"cellPhone"];
+    self.additionalInfo.text = self.rusheeObj[@"additionalInfo"];
+
     //self.rusheeObj =
     // Do any additional setup after loading the view from its nib.
 }
 
+-(void)setReceiveObject:(PFObject *)obj {
+    self.rusheeObj = obj;
+}
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];

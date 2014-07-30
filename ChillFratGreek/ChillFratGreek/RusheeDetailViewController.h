@@ -12,4 +12,17 @@
 @interface RusheeDetailViewController : UIViewController
 
 @property (strong, nonatomic) PFObject *rusheeObj;
+-(void)setReceiveObject:(PFObject *)obj;
+@property (weak, nonatomic) IBOutlet UIImageView *rusheeProfilePic;
+@property (weak, nonatomic) IBOutlet UIImageView *indicdentIndicator;
+@property (weak, nonatomic) IBOutlet UILabel *rusheeFirstName;
+@property (weak, nonatomic) IBOutlet UILabel *rusheeLastName;
+@property (weak, nonatomic) IBOutlet UILabel *hometown;
+@property (weak, nonatomic) IBOutlet UILabel *cellPhoneNumber;
+@property (weak, nonatomic) IBOutlet UILabel *additionalInfo;
+@property (weak, nonatomic) IBOutlet UIView *additionalInfoView;
+@property (weak, nonatomic) IBOutlet UIButton *downVote;
+@property (weak, nonatomic) IBOutlet UIButton *upVote;
+@property (weak, nonatomic) IBOutlet UILabel *voteCount;
+
 @end

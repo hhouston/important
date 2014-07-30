@@ -15,6 +15,10 @@
 #import "LogInViewController.h"
 #import "ProfileObject.h"
 #import "CheckLoginViewController.h"
+#import "RearMasterTableViewController.h"
+#import "SWRevealViewController.h"
+#import "RightTableViewController.h"
+#import "SlideNavigationController.h"
 
 @implementation AppDelegate
 
@@ -106,12 +110,17 @@
     // This will get a pointer to an object that represents the app bundle
     //self.storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
 
+    //RightTableViewController *rightMenu = [[RightTableViewController alloc ] init];
+    //[SlideNavigationController sharedInstance].rightMenu = rightMenu;
+
+    
         
         //    // Create content and menu controllers
         NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:[[CheckLoginViewController alloc] init]];
         MenuViewController *menuController = [[MenuViewController alloc] initWithStyle:UITableViewStylePlain];
         
-        
+    
+    
         //    // Create frosted view controller
         REFrostedViewController *frostedViewController = [[REFrostedViewController alloc] initWithContentViewController:navigationController menuViewController:menuController];
         frostedViewController.direction = REFrostedViewControllerDirectionLeft;
@@ -119,8 +128,7 @@
         frostedViewController.liveBlur = YES;
         frostedViewController.delegate = self;
         //
-        
-        
+    
         //    // Make it a root controller
         //    //
         self.window.rootViewController = frostedViewController;

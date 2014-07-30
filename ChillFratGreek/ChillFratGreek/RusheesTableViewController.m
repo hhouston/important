@@ -9,6 +9,8 @@
 #import "RusheesTableViewController.h"
 #import "NavigationController.h"
 #import "RusheeDetailViewController.h"
+#import "RusheeTableViewCell.h"
+#import "RusheeObject.h"
 
 @interface RusheesTableViewController ()
 
@@ -16,7 +18,7 @@
 
 @implementation RusheesTableViewController {
     NavigationController *navc;
-    
+    UIImage *menuImage;
 }
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -70,10 +72,9 @@
     //declare here to fix bug
     //ARC is autoreleasing your secondView controller before your selector is being called?
     navc = [[NavigationController alloc] init];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Menu"
-                                                                             style:UIBarButtonItemStylePlain
-                                                                            target:navc.navigationController
-                                                                            action:@selector(showMenu)];
+    menuImage = [[UIImage imageNamed:@"menu.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:menuImage style:UIBarButtonItemStylePlain target:(NavigationController *)self.navigationController action:@selector(showMenu)];
+
     
 
 //    PFQuery *query = [PFQuery queryWithClassName:self.parseClassName];
@@ -107,42 +108,84 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
      //self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
-//- (PFQuery *)queryForTable {
-//    PFQuery *query = [PFQuery queryWithClassName:self.parseClassName];
-//    NSLog(@"chapterID: %@", self.chapterID);
-//    [query whereKey:@"chapterID" equalTo:self.chapterID];
-//
-//    // If no objects are loaded in memory, we look to the cache first to fill the table
-//    // and then subsequently do a query against the network.
-//    if (self.objects.count == 0) {
-//        query.cachePolicy = kPFCachePolicyCacheThenNetwork;
+- (PFQuery *)queryForTable {
+    PFQuery *query = [PFQuery queryWithClassName:self.parseClassName];
+    NSLog(@"chapterID: %@", self.chapterID);
+    [query whereKey:@"chapterID" equalTo:self.chapterID];
+
+    // If no objects are loaded in memory, we look to the cache first to fill the table
+    // and then subsequently do a query against the network.
+    if (self.objects.count == 0) {
+        query.cachePolicy = kPFCachePolicyCacheThenNetwork;
+    }
+    
+    [query orderByDescending:@"downVotes"];
+    
+    return query;
+}
+
+//- (UITableViewCell *)tableView:(UITableView *)tableView
+//         cellForRowAtIndexPath:(NSIndexPath *)indexPath
+//                        object:(PFObject *)object
+//{
+//    static NSString *cellIdentifier = @"Cell";
+//    
+//   // NSLog(@"name of rushees: %@",rusheeObjs objectAtIndex:<#(NSUInteger)#> [@"name"]);
+//    PFTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+//    if (!cell) {
+//        cell = [[PFTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+//                                      reuseIdentifier:cellIdentifier];
 //    }
 //    
-//    //[query orderByDescending:@"createdAt"];
+//    // Configure the cell to show todo item with a priority at the bottom
+//    cell.textLabel.text = object[@"name"];
+////    cell.detailTextLabel.text = [NSString stringWithFormat:@"Priority: %@",
+////                                 object[@"priority"]];
 //    
-//    return query;
+//    return cell;
 //}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
                         object:(PFObject *)object
 {
-    static NSString *cellIdentifier = @"Cell";
     
-   // NSLog(@"name of rushees: %@",rusheeObjs objectAtIndex:<#(NSUInteger)#> [@"name"]);
-    PFTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    if (!cell) {
-        cell = [[PFTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                      reuseIdentifier:cellIdentifier];
+    static NSString *simpleTableIdentifier = @"SimpleTableItem";
+    
+    RusheeTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
+    if (cell == nil) {
+        
+        cell = [[RusheeTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
+        cell = [[[NSBundle mainBundle] loadNibNamed:@"RusheeTableViewCell" owner:nil options:nil] objectAtIndex:0];
+        //cell.backgroundColor = [UIColor colorWithRed:(125/255.0) green:(38/255.0) blue:(205/255.0) alpha:.3];
+        //cell.layer.cornerRadius = 5.0;
+        //cell.backgroundColor = [UIColor clearColor];
+        [cell setClipsToBounds:YES];
+        //cell.backgroundColor = [UIColor clearColor];
+        //cell.separatorInset = UIEdgeInsetsMake(0, 50, 0, 0);
     }
     
-    // Configure the cell to show todo item with a priority at the bottom
-    cell.textLabel.text = object[@"name"];
-//    cell.detailTextLabel.text = [NSString stringWithFormat:@"Priority: %@",
-//                                 object[@"priority"]];
+    cell.rusheeFirstName.text = object[@"firstName"];
+    cell.rusheeLastName.text = object[@"lastName"];
+
+    PFFile *thumbnail = object[@"avatar"];
+    [thumbnail getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+        UIImage *avatar = [UIImage imageWithData:data];
+        cell.imageView.image = avatar;
+
+    }];
+    
+    cell.imageView.image = [UIImage imageNamed:@"user"];
+    //NSString *distance = [NSString stringWithFormat:@"%0.2fmi",tempMarker.distance];
+    //cell.distance.text = distance;
+    //cell.distance.textColor = [UIColor blackColor];
+    
+    //NSLog(@"name:%@",tempMarker.userData[@"name"]);
+    //cell.backgroundColor = [UIColor clearColor];
+    //cell.backgroundColor = [UIColor colorWithRed:(0/255.0) green:(113/255.0) blue:(188/255.0) alpha:.7];
     
     return cell;
 }
+
 
 #pragma mark - Table view data source
 
@@ -165,7 +208,8 @@
     RusheeDetailViewController *rusheeDetailViewController = [[RusheeDetailViewController alloc]
      initWithNibName:@"RusheeDetailViewController"
      bundle:nil];
-    rusheeDetailViewController.rusheeObj =  [self.objects objectAtIndex:(NSUInteger)indexPath.row];
+    PFObject *obj =  [self.objects objectAtIndex:(NSUInteger)indexPath.row];
+    [rusheeDetailViewController setReceiveObject:obj];
      // ...
      // Pass the selected object to the new view controller.
      //[self.navigationController pushViewController:rusheeDetailViewController animated:YES];
@@ -182,4 +226,8 @@
      animated:YES];
 }
 
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 40;
+}
 @end

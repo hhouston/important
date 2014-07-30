@@ -23,10 +23,11 @@
 #import "GMSMarkerNew.h"
 #import "MapTableViewCell.h"
 #import <QuartzCore/QuartzCore.h>
+#import <MessageUI/MessageUI.h>
 
 static CGFloat kOverlayHeight = 177.0f;
 
-@interface PledgesMapViewController () {
+@interface PledgesMapViewController () <MFMessageComposeViewControllerDelegate, UINavigationControllerDelegate> {
     GMSMapView *mapView_;
     BOOL firstLocationUpdate_;
     //UITableView *overlay_;
@@ -52,7 +53,7 @@ static CGFloat kOverlayHeight = 177.0f;
     NSUInteger markerIndex;
 }
 
-@property (nonatomic, retain) UITableView *overlay_;
+@property (nonatomic, strong) UITableView *overlay_;
 
 @end
 
@@ -383,6 +384,7 @@ static CGFloat kOverlayHeight = 177.0f;
     [self.overlay_ scrollToRowAtIndexPath:fooIndexPath
                               atScrollPosition:UITableViewScrollPositionTop animated:YES];
     
+    
     [UIView animateWithDuration:1.0 animations:^{
         callButton.alpha = 0.0;
         textButton.alpha = 0.0;
@@ -408,7 +410,7 @@ static CGFloat kOverlayHeight = 177.0f;
     
     callButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     //callButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 53, 150, 40, 40)];
-    callButton = [[UIButton alloc] initWithFrame:CGRectMake(15, 340, 40, 40)];
+    callButton = [[UIButton alloc] initWithFrame:CGRectMake(12, 344, 40, 40)];
     callButton.backgroundColor = [UIColor whiteColor];
     callButton.layer.cornerRadius = 4;
     [callButton.layer setBorderColor:[UIColor blackColor].CGColor];
@@ -417,8 +419,8 @@ static CGFloat kOverlayHeight = 177.0f;
     callButton.layer.shadowColor = [UIColor blackColor].CGColor;
     callButton.layer.shadowOffset = CGSizeMake(0.0f,0.50f);
     callButton.layer.masksToBounds = NO;
-    callButton.layer.shadowRadius = 1.7f;
-    callButton.layer.shadowOpacity = .25;
+    callButton.layer.shadowRadius = 1.5f;
+    callButton.layer.shadowOpacity = .45;
     [callButton setBackgroundImage:[self imageWithColor:[UIColor grayColor]] forState:UIControlStateHighlighted];
     [callButton addTarget:self action:@selector(callPhone) forControlEvents:UIControlEventTouchUpInside];
     callButton.alpha = 0.0;
@@ -436,7 +438,7 @@ static CGFloat kOverlayHeight = 177.0f;
     
     
     textButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    textButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 53, 200, 40, 40)];
+    textButton = [[UIButton alloc] initWithFrame:CGRectMake(95.3, 344, 40, 40)];
     //[textButton setBackgroundImage:[UIImage imageNamed:@"phone_icon20x.png"] forState:UIControlStateNormal];
     textButton.backgroundColor = [UIColor whiteColor];
     textButton.layer.cornerRadius = 4;
@@ -446,8 +448,8 @@ static CGFloat kOverlayHeight = 177.0f;
     textButton.layer.shadowColor = [UIColor blackColor].CGColor;
     textButton.layer.shadowOffset = CGSizeMake(0.0f,0.50f);
     textButton.layer.masksToBounds = NO;
-    textButton.layer.shadowRadius = 1.7f;
-    textButton.layer.shadowOpacity = .25;
+    textButton.layer.shadowRadius = 1.5f;
+    textButton.layer.shadowOpacity = .45;
     [textButton setBackgroundImage:[self imageWithColor:[UIColor grayColor]] forState:UIControlStateHighlighted];
     [textButton addTarget:self action:@selector(textPhone) forControlEvents:UIControlEventTouchUpInside];
     textButton.alpha = 0.0;
@@ -463,7 +465,9 @@ static CGFloat kOverlayHeight = 177.0f;
     }];
 
     pingButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    pingButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 53, 250, 40, 40)];
+    //pingButton = [[UIButton alloc] initWithFrame:CGRectMake(267, 250, 40, 40)];
+    pingButton = [[UIButton alloc] initWithFrame:CGRectMake(185, 344, 40, 40)];
+
     //[textButton setBackgroundImage:[UIImage imageNamed:@"phone_icon20x.png"] forState:UIControlStateNormal];
     pingButton.backgroundColor = [UIColor whiteColor];
     pingButton.layer.cornerRadius = 4;
@@ -473,8 +477,8 @@ static CGFloat kOverlayHeight = 177.0f;
     pingButton.layer.shadowColor = [UIColor blackColor].CGColor;
     pingButton.layer.shadowOffset = CGSizeMake(0.0f,0.50f);
     pingButton.layer.masksToBounds = NO;
-    pingButton.layer.shadowRadius = 1.7f;
-    pingButton.layer.shadowOpacity = .25;
+    pingButton.layer.shadowRadius = 1.5f;
+    pingButton.layer.shadowOpacity = .45;
     [pingButton setBackgroundImage:[self imageWithColor:[UIColor grayColor]] forState:UIControlStateHighlighted];
     [pingButton addTarget:self action:@selector(pingPhone) forControlEvents:UIControlEventTouchUpInside];
     pingButton.alpha = 0.0;
@@ -518,8 +522,36 @@ static CGFloat kOverlayHeight = 177.0f;
 
 -(void)textPhone {
     
-    NSString *fullNumber = [NSString stringWithFormat:@"tel:%@",phoneNumber];
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:fullNumber]];
+    //NSString *fullNumber = [NSString stringWithFormat:@"tel:%@",phoneNumber];
+    MFMessageComposeViewController *controller = [[MFMessageComposeViewController alloc] init];
+    
+	if([MFMessageComposeViewController canSendText])
+	{
+		controller.body = @"sup";
+		controller.recipients = [NSArray arrayWithObjects:[NSString stringWithFormat:@"%@",phoneNumber], nil];
+		controller.messageComposeDelegate = self;
+		[self presentViewController:controller animated:YES completion:nil];
+	}
+}
+
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result
+{
+	switch (result) {
+		case MessageComposeResultCancelled:
+			NSLog(@"Cancelled");
+			break;
+		case MessageComposeResultFailed:
+			//UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"MyApp" message:@"Unknown Error" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
+			//[alert show];
+			break;
+		case MessageComposeResultSent:
+            
+			break;
+		default:
+			break;
+	}
+    
+	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 -(void)pingPhone {
@@ -639,6 +671,16 @@ static CGFloat kOverlayHeight = 177.0f;
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
 }
+#pragma mark - SlideNavigationController Methods -
 
+- (BOOL)slideNavigationControllerShouldDisplayLeftMenu
+{
+	return YES;
+}
+
+- (BOOL)slideNavigationControllerShouldDisplayRightMenu
+{
+	return YES;
+}
 @end
 

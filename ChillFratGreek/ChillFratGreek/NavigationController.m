@@ -23,11 +23,11 @@
 {
     [super viewDidLoad];
       //clear nav bar
-//    [self.navigationBar setBackgroundImage:[UIImage new]
-//                             forBarMetrics:UIBarMetricsDefault];
-//    self.navigationBar.shadowImage = [UIImage new];
-//    self.navigationBar.translucent = YES;
-    
+    [self.navigationBar setBackgroundImage:[UIImage new]
+                             forBarMetrics:UIBarMetricsDefault];
+    self.navigationBar.shadowImage = [UIImage new];
+    self.navigationBar.translucent = YES;
+//    self.navigationBar.backgroundColor = [UIColor whiteColor];
     [self.view addGestureRecognizer:[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)]];
 }
 
