@@ -77,7 +77,11 @@
                 //NSLog(@"USERID:%@",userID);
                 NSLog(@"No profile in Core Data...loading from Parse with userID:%@",userID);
                 PFQuery *query = [PFQuery queryWithClassName:@"_User"];
-                [query getObjectInBackgroundWithId:userID block:^(PFObject *object, NSError *error) {
+                PFObject *object = [query getObjectWithId:userID];
+                
+                
+                
+                //[query getObjectInBackgroundWithId:userID block:^(PFObject *object, NSError *error) {
                     // Do something with the returned PFObject in the gameScore variable.
                     NSLog(@"%@", object);
                 //}];
@@ -89,7 +93,7 @@
                     hvc.chapterID = self.chapterID;
                     hvc.alias = alias;
                     NSLog(@"alias:%@\nchapterID:%@",alias,self.chapterID);
-                }];
+                //}];
 
 
             } else {

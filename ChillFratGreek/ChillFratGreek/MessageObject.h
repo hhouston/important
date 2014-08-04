@@ -15,5 +15,5 @@
 @property (strong, nonatomic) NSDate *timestamp;
 @property (assign, nonatomic) NSUInteger voteCount;
 @property (strong, nonatomic) NSMutableArray *upVotersArray;
-
+@property (assign, nonatomic) BOOL selected;
 @end

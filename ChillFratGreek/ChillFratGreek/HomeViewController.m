@@ -21,9 +21,16 @@
 #import "ChatTableViewCell.h"
 #import "ChatTableViewController.h"
 #import "MessageObject.h"
+#import <MobileCoreServices/MobileCoreServices.h>
 
 #define pageCount 3.0
-@interface HomeViewController () <SKRequestDelegate, UIScrollViewDelegate, UITableViewDelegate, UITableViewDataSource> {
+#define kOFFSET_FOR_KEYBOARD 215.0
+static const CGFloat KEYBOARD_ANIMATION_DURATION = 0.3;
+static const CGFloat MINIMUM_SCROLL_FRACTION = 0.2;
+static const CGFloat MAXIMUM_SCROLL_FRACTION = 0.8;
+static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
+
+@interface HomeViewController () <SKRequestDelegate, UIScrollViewDelegate, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIActionSheetDelegate> {
     
     WhiteboardViewController *cvc;
     CGFloat height;
@@ -31,15 +38,12 @@
     NSMutableArray *messages;
     NSUInteger numberOfObjects;
     NSUInteger objectCounter;
-}
-
-@property (nonatomic,strong)NSArray* fetchedProfilesArray;
-@property (strong, nonatomic) NSMutableArray *twitterFeed;
-@property (strong, strong) NSMutableArray *scrollViews;
-
-@end
-
-@implementation HomeViewController {
+    NSUInteger voteCounter;
+    NSNumber *voteCount;
+    NSMutableArray *upVotedArray;
+    UITextField *textField;
+    BOOL up;
+    CGFloat animatedDistance;
     UIScrollView *twitterScrollView;
     UIScrollView *chatBottomScrollView;
     UIScrollView *pageScrollView;
@@ -52,157 +56,145 @@
     NSMutableArray *messageArray;
     CGRect tableViewFrame;
     UIView *chatBackgroundView;
-    //ChatTableViewController *tableView;
+    UIButton *button;
+    UIView *navBar;
+    BOOL viewLoaded;
+    
+    NSMutableArray *attachments;
 }
+
+@property (nonatomic,strong)NSArray* fetchedProfilesArray;
+@property (strong, nonatomic) NSMutableArray *twitterFeed;
+@property (strong, strong) NSMutableArray *scrollViews;
+
+@end
+
+@implementation HomeViewController
+
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    tweetsLoaded = false;
-    //self.navigationController.title = @"chat";
-    NSMutableParagraphStyle *style =  [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-    //style.alignment = NSTextAlignmentJustified;
-    style.firstLineHeadIndent = 5.0f;
-    style.headIndent = 5.0f;
-    //style.tailIndent = 1.0f;
-    
-    
-    
-    //UIFont *labelFont = [UIFont fontWithName:@"AppleSDGothicNeo-Thin" size:14 ];
-    
-    //    NSDictionary *arialdict = [NSDictionary dictionaryWithObject:labelFont forKey:NSFontAttributeName];
-    //    NSMutableAttributedString *message = [[NSMutableAttributedString alloc] initWithString:@"this is just the sample example of how to calculate the dynamic height for tableview cell which is of around 7 to 8 lines."attributes:@{NSParagraphStyleAttributeName: style}];
-    //    [message addAttribute:NSFontAttributeName value:labelFont range:NSMakeRange(0, [message length])];
-    //
-    //    messageArray = [NSMutableArray arrayWithObjects:message, nil];
-    //    NSMutableAttributedString *message_1 = [[NSMutableAttributedString alloc] initWithString:@"you will" attributes:@{NSParagraphStyleAttributeName: style}];
-    //    [message_1 addAttribute:NSFontAttributeName value:labelFont range:NSMakeRange(0, [message_1 length])];
-    //
-    //    NSMutableAttributedString *message3 = [[NSMutableAttributedString alloc] initWithString:@"hey this is the 3rd text"attributes:@{NSParagraphStyleAttributeName: style}];
-    //    [message3 addAttribute:NSFontAttributeName value:labelFont range:NSMakeRange(0, [message3 length])];
-    //
-    //    NSMutableAttributedString *message4 = [[NSMutableAttributedString alloc] initWithString:@"4th text hippopotamaus right here testing testing testing this is a long sentence write somethings else......"attributes:@{NSParagraphStyleAttributeName: style}];
-    //    [message4 addAttribute:NSFontAttributeName value:labelFont range:NSMakeRange(0, [message4 length])];
-    //
-    //    NSMutableAttributedString *message5 = [[NSMutableAttributedString alloc] initWithString:@"5th test text here is some things i am writing and whatnot keep going type type type type type type type type type here is more text to test the text tester testinggggggg"attributes:@{NSParagraphStyleAttributeName: style}];
-    //    [message5 addAttribute:NSFontAttributeName value:labelFont range:NSMakeRange(0, [message5 length])];
-    //
-    //    NSMutableAttributedString *message6 = [[NSMutableAttributedString alloc] initWithString:@"hey hey hey hey hey"attributes:@{NSParagraphStyleAttributeName: style}];
-    //    [message6 addAttribute:NSFontAttributeName value:labelFont range:NSMakeRange(0, [message6 length])];
-    //
-    //    [messageArray addObject:message_1];
-    //    [messageArray addObject:message3];
-    //    [messageArray addObject:message4];
-    //    [messageArray addObject:message5];//[self loadTweets];
-    //    [messageArray addObject:message6];
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    messages = [[NSMutableArray alloc] init];
-    UIFont *labelFont = [UIFont fontWithName:@"AppleSDGothicNeo-Thin" size:14 ];
-    
-    
-    //fetch messages
-    PFQuery *query = [PFQuery queryWithClassName:@"chats"];
-    [query whereKey:@"chapterID" equalTo:self.chapterID];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        numberOfObjects = objects.count;
-        objectCounter = 0;
-        
-        if (!error) {
-            
-            NSLog(@"Successfully retrieved %lu messages.", (unsigned long)objects.count);
-            
-            for (PFObject *object in objects) {
-                objectCounter++;
-                //NSLog(@"%@", object.objectId);
-                //NSLog(@"LOCATION:%@",object[@"location"]);
-                MessageObject *messageObj = [[MessageObject alloc] init];
-                NSString *message = object[@"text"];
-                
-                NSMutableAttributedString *attributedMessage = [[NSMutableAttributedString alloc] initWithString:message attributes:@{NSParagraphStyleAttributeName: style}];
-                //[attributedMessage addAttribute:NSFontAttributeName value:labelFont range:NSMakeRange(0, [attributedMessage length])];
-                
-                
-                
-                
-                messageObj.message = attributedMessage;
-                messageObj.user = object[@"user"];
-                messageObj.timestamp = object[@"createdAt"];
-                [messages addObject:messageObj];
-                if (objectCounter == numberOfObjects) {
-                    [self.chatTableView reloadData];
-                }
-            }
-        } else {
-            // Log details of the failure
-            NSLog(@"Error: %@ %@", error, [error userInfo]);
-            
-        }
-        //[self.overlay_ performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
-    }];
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    up = NO;
     self.view.backgroundColor = [UIColor blackColor];
     
-    NSArray *itemArray = [NSArray arrayWithObjects: @"chapter", @"college", nil];
-    UISegmentedControl *segmentedControl = [[UISegmentedControl alloc] initWithItems:itemArray];
-    segmentedControl.frame = CGRectMake(0, 90, 100, 20);
-    //segmentedControl.center = CGPointMake(self.view.frame.size.width / 2,0);
-    //segmentedControl.backgroundColor = [UIColor blueColor];
-    //segmentedControl.segmentedControlStyle = UISegmentedControlStylePlain;
-    [segmentedControl addTarget:self action:@selector(valueChanged:) forControlEvents: UIControlEventValueChanged];
-    segmentedControl.selectedSegmentIndex = 0;
-    //[[self navigationItem] setTitleView:segmentedControl];
-    //[self.view addSubview:segmentedControl];
     
+    [self getMessages];
+    [self chatBackgroundView];
+    [self navBar];
+    
+    //[self setupMessageTextView];
+    
+    //fiji badge
     //imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
     //imageView.image = [UIImage imageNamed:@"Phi_Gam"];
     //imageView.center = CGPointMake(self.view.frame.size.width / 2, 120);
-    
     //imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     //imageView.contentMode = UIViewContentModeCenter;
     //[self.view addSubview:imageView];
     
-    chatBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-    //chatBackgroundView.center = CGPointMake(self.view.frame.size.width / 2, 250);
     
-    //chatBackgroundView.backgroundColor = [UIColor colorWithRed:(125/255.0) green:(38/255.0) blue:(205/255.0) alpha:.7];
-    chatBackgroundView.backgroundColor = [UIColor whiteColor];
-    chatBackgroundView.layer.cornerRadius = 2.0;
-    chatBackgroundView.alpha = .9;
-    //chatBackgroundView.layer.cornerRadius = 5;
-    chatBackgroundView.layer.masksToBounds = YES;
-    //chatBackgroundView.layer.borderColor = [UIColor colorWithRed:(125/255.0) green:(38/255.0) blue:(205/255.0) alpha:1.0].CGColor;
-    //chatBackgroundView.layer.borderWidth = 4.0;
-    [self.view addSubview:chatBackgroundView];
-    //tableView = [[ChatTableViewController alloc] init];
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
     
-    //self.view.backgroundColor = [UIColor colorWithRed:189.0/255 green:190.0/255 blue:194.0/255 alpha:1.0];
-    //
-    //    SWRevealViewController *revealController = self.revealViewController;
-    //    [self.view addGestureRecognizer:revealController.panGestureRecognizer];
+    [super viewWillAppear:animated];
+    //NSIndexPath *lastMessageIP = [NSIndexPath indexPathForRow:numberOfObjects-1 inSection:0] ;
     
-    //        UISwipeGestureRecognizer *swipeLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:revealController action:@selector(rightRevealToggle:)];
-    //        [swipeLeft setDirection:UISwipeGestureRecognizerDirectionLeft];
-    //        [self.view addGestureRecognizer:swipeLeft];
+    [self getMessages];
+    //[self.chatTableView scrollToRowAtIndexPath:lastMessageIP atScrollPosition:NULL animated:YES];
+    
+    if (viewLoaded == NO) {
+        
+        tableViewFrame = CGRectMake(0, 64, self.view.frame.size.width,self.view.frame.size.height-104);
+        [self setUpTableView];
+        viewLoaded = YES;
+        
+    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    
+    [super viewWillDisappear:(BOOL)animated];
+    
+}
+
+-(void)textFieldDidBeginEditing:(UITextField *)textFieldEdit
+{
+    navBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 64)];
+    navBar.backgroundColor = [UIColor whiteColor];
+    navBar.layer.cornerRadius = 2.0;
+    //navBar.backgroundColor =  [UIColor colorWithRed:200.0/255 green:200.0/255 blue:200.0/255 alpha:.9];
+    [chatBackgroundView addSubview:navBar];
+    
+    CGRect textFieldRect =
+    [self.view.window convertRect:textFieldEdit.bounds fromView:textField];
+    CGRect viewRect =
+    [self.view.window convertRect:self.view.bounds fromView:self.view];
+    
+    CGFloat midline = textFieldRect.origin.y + 0.5 * textFieldRect.size.height;
+    CGFloat numerator =
+    midline - viewRect.origin.y
+    - MINIMUM_SCROLL_FRACTION * viewRect.size.height;
+    CGFloat denominator =
+    (MAXIMUM_SCROLL_FRACTION - MINIMUM_SCROLL_FRACTION)
+    * viewRect.size.height;
+    
+    CGFloat heightFraction = numerator / denominator;
+    if (heightFraction < 0.0)
+    {
+        heightFraction = 0.0;
+    }
+    else if (heightFraction > 1.0)
+    {
+        heightFraction = 1.0;
+    }
     
     
+    animatedDistance = floor(PORTRAIT_KEYBOARD_HEIGHT * heightFraction);
+    
+    CGRect viewFrame = self.view.frame;
+    viewFrame.origin.y -= animatedDistance;
+    
+    CGRect viewFrameNav = navBar.frame;
+    viewFrameNav.origin.y += animatedDistance;
+    
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationBeginsFromCurrentState:YES];
+    [UIView setAnimationDuration:KEYBOARD_ANIMATION_DURATION];
+    
+    [self.view setFrame:viewFrame];
+    [navBar setFrame:viewFrameNav];
+    
+    [UIView commitAnimations];
+    
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField
+
+{
+    CGRect viewFrame = self.view.frame;
+    viewFrame.origin.y += animatedDistance;
+    
+    CGRect viewFrameNav = navBar.frame;
+    viewFrameNav.origin.y -= animatedDistance;
+    
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationBeginsFromCurrentState:YES];
+    [UIView setAnimationDuration:KEYBOARD_ANIMATION_DURATION];
+    
+    [self.view setFrame:viewFrame];
+    [navBar setFrame:viewFrameNav];
+    [UIView commitAnimations];
+    
+    //[navBar removeFromSuperview];
+}
+
+#pragma mark - set up view methods
+
+- (void) navBar {
     
     menuImage = [[UIImage imageNamed:@"menu.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:menuImage style:UIBarButtonItemStylePlain target:(NavigationController *)self.navigationController action:@selector(showMenu)];
@@ -210,21 +202,6 @@
     
     settingsImage = [[UIImage imageNamed:@"cogs.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:settingsImage style:UIBarButtonItemStylePlain target:(NavigationController *)self.navigationController action:@selector(showSettings)];
-    //
-    //    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Settings"
-    //                                                                             style:UIBarButtonItemStylePlain
-    //                                                                            target:self
-    //                                                                            action:@selector(showMenu)];
-    
-    
-}
--(void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    
-    
-    tableViewFrame = CGRectMake(0, 64, self.view.frame.size.width,self.view.frame.size.height-100);
-    [self setUpTableView];
 }
 
 -(void)setUpTableView {
@@ -246,243 +223,474 @@
     self.chatTableView.backgroundColor = [UIColor colorWithRed:(125/255.0) green:(38/255.0) blue:(205/255.0) alpha:.9];
     //self.overlay_.backgroundColor = HEXCOLOR(663399);
     [chatBackgroundView addSubview:self.chatTableView];
+    [self setupMessageTextView];
     //
 }
 
-
-#pragma mark - SlideNavigationController Methods -
-
-- (BOOL)slideNavigationControllerShouldDisplayLeftMenu
-{
-	return YES;
+-(void)chatBackgroundView {
+    chatBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    //chatBackgroundView.center = CGPointMake(self.view.frame.size.width / 2, 250);
+    
+    //chatBackgroundView.backgroundColor = [UIColor colorWithRed:(125/255.0) green:(38/255.0) blue:(205/255.0) alpha:.7];
+    chatBackgroundView.backgroundColor = [UIColor whiteColor];
+    chatBackgroundView.layer.cornerRadius = 2.0;
+    chatBackgroundView.alpha = .9;
+    //chatBackgroundView.layer.cornerRadius = 5;
+    chatBackgroundView.layer.masksToBounds = YES;
+    //chatBackgroundView.layer.borderColor = [UIColor colorWithRed:(125/255.0) green:(38/255.0) blue:(205/255.0) alpha:1.0].CGColor;
+    //chatBackgroundView.layer.borderWidth = 4.0;
+    [self.view addSubview:chatBackgroundView];
 }
 
-- (BOOL)slideNavigationControllerShouldDisplayRightMenu
-{
-	return YES;
-}
-//- (void)viewWillAppear:(BOOL)animated {
-//[super viewWillAppear:animated];
-
-// 4
-//CGSize pagesScrollViewSize = pageScrollView.frame.size;
-//pageScrollView.contentSize = CGSizeMake(pagesScrollViewSize.width * pageCount, pagesScrollViewSize.height);
-
-// 5
-//[self loadVisiblePages];
-//}
-
-- (void)loadPageScrollView {
-    
-    
-    int numberOfPages = pageCount;
-    pageScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width,
-                                                                    self.view.frame.size.height)];
-    [pageScrollView setContentSize:CGSizeMake(numberOfPages*pageScrollView.frame.size.width, pageScrollView.frame.size.height)];
-    [pageScrollView setPagingEnabled:YES];
-    [pageScrollView setShowsHorizontalScrollIndicator:NO];
-    [pageScrollView setDelegate:self];
-    [self.view addSubview:pageScrollView];
-    
-    //y val - pageScrollView.frame.size.height-30
-    pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, pageScrollView.frame.size.height-180, pageScrollView.frame.size.width, 20)];
-    [pageControl setNumberOfPages:numberOfPages];
-    //pageControl.backgroundColor = [UIColor blueColor];
-    [pageControl setCurrentPage:0];
-    [self.view addSubview:pageControl];
-    
-    [self loadTwitterScrollView];
-    //    for (int i=0; i<numberOfPages; i++) {
-    //        CGRect frame = pageScrollView.frame;
-    //        frame.origin.x = frame.size.width * i;
-    //        frame.origin.y = 0;
-    //        //UIView *view = [[UIView alloc] initWithFrame:frame];
-    //        //Setup your view
-    //        //[pageScrollView addSubview:view];
-    //    }
-    
-    
-}
-
-
-#pragma mark - Twitter Methods
-- (void)loadTwitterScrollView{
-    
-    if (twitterScrollView == nil ) {
-        twitterScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(pageScrollView.frame.size.width, 418, self.view.frame.size.width, 150)];
-        twitterScrollView.backgroundColor = [UIColor colorWithRed:(0/255.0) green:(113/255.0) blue:(188/255.0) alpha:.7];
-        twitterScrollView.pagingEnabled = NO;
-        twitterScrollView.delegate = self;
-        
-        
-        
-    }
-    //lets create 10 views
-    //NSInteger numberOfViews = 10;
-    for (NSInteger i = 0; i < self.twitterFeed.count; i++) {
-        
-        //set the origin of the sub view
-        //CGFloat myOrigin = i * self.view.frame.size.width;
-        CGFloat myOrigin = i * 135 + 5;
-        
-        //create the sub view and allocate memory
-        UIView *tweetView = [[UIView alloc] initWithFrame:CGRectMake(myOrigin, 5, 130, 140)];
-        //set the background to white color
-        tweetView.backgroundColor = [UIColor whiteColor];
-        //tweetView.backgroundColor = [UIColor colorWithRed:(0/255.0) green:(113/255.0) blue:(188/255.0) alpha:.7];
-        tweetView.layer.cornerRadius = 6.0;
-        //create a label and add to the sub view
-        //UILabel *myLabel = [[UILabel alloc] initWithFrame:myFrame];
-        //myLabel.text = [NSString stringWithFormat:@"This is page number %d", i];
-        NSDictionary *t = self.twitterFeed[i];
-        
-        
-        NSString *aURL = t[@"user"][@"profile_image_url"];
-        //NSLog(@"url:%@",aURL);
-        UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:aURL]]];
-        
-        UIImageView *tweetImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5,5,48,48)];
-        tweetImageView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-        
-        [tweetImageView setImage:image];
-        tweetImageView.layer.masksToBounds = YES;
-        tweetImageView.layer.cornerRadius = 5.0;
-        tweetImageView.layer.borderColor = [UIColor colorWithRed:(0/255.0) green:(113/255.0) blue:(188/255.0) alpha:.7].CGColor;
-        tweetImageView.layer.borderWidth = 3.0f;
-        tweetImageView.layer.rasterizationScale = [UIScreen mainScreen].scale;
-        tweetImageView.layer.shouldRasterize = YES;
-        tweetImageView.clipsToBounds = YES;
-        [tweetView addSubview:tweetImageView];
-        
-        UILabel *tweeterLabel = [[UILabel alloc] initWithFrame:CGRectMake(51, 5, 80, 20)];
-        tweeterLabel.textAlignment = NSTextAlignmentCenter;
-        tweeterLabel.text = @"@TotalFratMove";
-        tweeterLabel.font = [UIFont boldSystemFontOfSize:10.0f];
-        tweeterLabel.textColor = [UIColor blackColor];
-        [tweetView addSubview:tweeterLabel];
-        
-        CGRect myFrame = CGRectMake(10.0f, 50.0f, 100.0f, 80.0f);
-        UILabel *tweetLabel = [[UILabel alloc] initWithFrame:myFrame];
-        tweetLabel.text = t[@"text"];
-        
-        NSInteger lines = 5;
-        tweetLabel.numberOfLines = lines;
-        tweetLabel.font = [UIFont boldSystemFontOfSize:11.0f];
-        tweetLabel.textColor = [UIColor blackColor];
-        tweetLabel.textAlignment =  NSTextAlignmentLeft;
-        [tweetView addSubview:tweetLabel];
-        
-        
-        //set the scroll view delegate to self so that we can listen for changes
-        //self.twitterScrollView.delegate = self;
-        //add the subview to the scroll view
-        [twitterScrollView addSubview:tweetView];
-    }
-    
-    //set the content size of the scroll view, we keep the height same so it will only
-    //scroll horizontally
-    twitterScrollView.contentSize = CGSizeMake(135 * (self.twitterFeed.count) + 5,
-                                               100);
-    
-    
-    NSLog(@"HVC--------alias: %@\nchapterID:%@", self.alias, self.chapterID);
-    
-    [twitterScrollView removeFromSuperview];
-    
-    [self.view addSubview:twitterScrollView];
-    
-}
-
-
-- (void)scrollViewDidScroll:(UIScrollView *)sender {
-    CGFloat pageWidth = pageScrollView.frame.size.width;
-    int page = floor((pageScrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
-    
-    //    NSLog(@"twitterScrollView offset.x:%f", twitterScrollView.contentOffset.x);
-    //    if (twitterScrollView.contentOffset.x > self.twitterFeed.count*135-pageScrollView.frame.size.width ) {
+- (void) setupMessageTextView {
+    self.messageTextView = [[UIView alloc] initWithFrame:CGRectMake(0, 528, self.view.frame.size.width, 41)];
+    self.messageTextView.alpha = 2.0;
+    self.messageTextView.backgroundColor = [UIColor whiteColor];
+    [chatBackgroundView addSubview:self.messageTextView];
     //
-    //        [twitterScrollView setContentSize:CGSizeMake(150 * (self.twitterFeed.count+4), 100)];
-    //        //[scrollView setContentOffset:CGPointMake(scrollView.contentOffset.x-((29+70)*36),  0)];
-    //    }
-    //NSLog(@"pageScrollView offset.x:%f", pageScrollView.contentOffset.x);
+    //    UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, .5)];
+    //    line.backgroundColor =  [UIColor colorWithRed:210.0/255 green:210.0/255 blue:210.0/255 alpha:1];
+    //    [self.messageTextView addSubview:line];
     
-    if (pageScrollView.contentOffset.x > 760){
-        [pageScrollView setContentOffset:CGPointMake(0, 0)];
-    }
-    //    if (pageControl.currentPage != page && page == 1) {
-    //        [self loadTweets];
-    //    }
-    pageControl.currentPage = page;
+    CGRect frame = CGRectMake(55, 5, 200, self.messageTextView.frame.size.height-10);
+    textField = [[UITextField alloc] initWithFrame:frame];
+    //textField.center = self.messageTextView.center;
+    //textField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+    textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    textField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    textField.borderStyle = UITextBorderStyleRoundedRect;
+    textField.textColor = [UIColor blackColor];
+    textField.font = [UIFont systemFontOfSize:17.0];
+    textField.placeholder = @"Suchen";
+    textField.backgroundColor = [UIColor whiteColor];
+    textField.autocorrectionType = UITextAutocorrectionTypeYes;
+    textField.keyboardType = UIKeyboardTypeDefault;
+    textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+    // Add a "textFieldDidChange" notification method to the text field control.
+    [textField addTarget:self
+                  action:@selector(textFieldDidChange:)
+        forControlEvents:UIControlEventEditingChanged];
+    textField.delegate = self;
+    [self.messageTextView addSubview:textField];
     
-    if (pageScrollView.contentOffset.x >= pageWidth * 2){
-        //NSLog(@"page3");
+    UIButton *cameraButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    cameraButton = [[UIButton alloc] initWithFrame:CGRectMake(11,4, 32, 32)];
+    UIImage *btnImage = [UIImage imageNamed:@"camerax"];
+    [cameraButton setImage:btnImage forState:UIControlStateNormal];
+    //[textButton setBackgroundImage:[UIImage imageNamed:@"phone_icon20x.png"] forState:UIControlStateNormal];
+    //cameraButton.backgroundColor = [UIColor whiteColor];
+    [cameraButton addTarget:self action:@selector(cameraButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.messageTextView addSubview:cameraButton];
+    
+    
+    button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [button addTarget:self
+               action:@selector(sendButtonPressed)
+     forControlEvents:UIControlEventTouchDown];
+    [button setTitle:@"Send" forState:UIControlStateNormal];
+    button.titleLabel.font = [UIFont systemFontOfSize:18.0];
+    
+    //button.titleLabel.textColor = [UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1];
+    [button setTitleColor:[UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1] forState:UIControlStateNormal];
+    
+    
+    button.frame = CGRectMake(262.0, 4.0, 50.0, 32.0);
+    [self.messageTextView addSubview:button];
+    
+    
+    //    UIButton *sendButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    //    sendButton = [[UIButton alloc] initWithFrame:CGRectMake(262, 4, 50, 32)];
+    //    //sendButton.backgroundColor = [UIColor yellowColor];
+    //
+    //    [sendButton setTitle:@"Send" forState:UIControlStateNormal];
+    //    [sendButton setTitle:@"Send" forState:UIControlStateSelected];
+    //    [sendButton setTitle:@"Send" forState:UIControlStateHighlighted];
+    //
+    //
+    //    sendButton.titleLabel.textColor = [UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1];
+    //
+    //    [self.messageTextView addSubview:sendButton];
+}
+
+- (void)sendButtonPressed {
+    if ([textField.text length] != 0) {
         
-    } else if (pageScrollView.contentOffset.x >= pageWidth){
-        NSLog(@"page2");
+        PFObject *object = [PFObject objectWithClassName:@"chats"];
+        object[@"chapterID"] = self.chapterID;
+        object[@"user"] = [PFUser currentUser];
+        object[@"text"] = textField.text;
         
-    } else if (pageScrollView.contentOffset.x == 0) {
-        NSLog(@"page1");
+        UIImage *tempImage = [attachments objectAtIndex:0];
+        NSData *imageData = UIImagePNGRepresentation(tempImage);
+        PFFile *newImageFile = [PFFile fileWithName:@"Levis.png" data:imageData];
+        [object setObject:newImageFile forKey:@"image"];
+        
+        [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error)
+         {
+             if (error == nil)
+             {
+                 [JSQSystemSoundPlayer jsq_playMessageSentSound];
+                 [self getMessages];
+                 textField.text = @"";
+                 [button setTitleColor:[UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1] forState:UIControlStateNormal];
+                 
+             }
+             else [ProgressHUD showError:@"Network error"];;
+         }];
+        
+    } else {
+        [ProgressHUD showError:@"type something..."];
     }
 }
 
+- (void)cameraButtonPressed {
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Take picture/video", @"Choose existing", nil];
+    [actionSheet showInView:[UIApplication sharedApplication].keyWindow];
+    //[actionSheet showInView:self.view];
+    
+}
 
-- (void)loadTweets {
-    
-    STTwitterAPI *twitter = [STTwitterAPI twitterAPIAppOnlyWithConsumerKey:@"Q9ywjYkSqI8WGObMP3GyA556t" consumerSecret:@"VZV3u6JprnGZKZ2de96PwdiSEEuHSbxvEu8c7YAb5zUBmjebuV"];
-    
-    [twitter verifyCredentialsWithSuccessBlock:^(NSString *username) {
+# pragma image picker delegate
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    //take picture
+    if (buttonIndex == 0) {
+        if ([UIImagePickerController isSourceTypeAvailable:
+             UIImagePickerControllerSourceTypeCamera])
+        {
+            UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
+            imagePicker.delegate = self;
+            imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+            imagePicker.mediaTypes =
+            @[(NSString *) kUTTypeImage,
+              (NSString *) kUTTypeMovie];
+            imagePicker.allowsEditing = YES;
+            [self presentViewController:imagePicker animated:YES completion:nil];
+            _newMedia = YES;
+        }
+    } else if (buttonIndex == 1) {
+        //choose existing
+        if ([UIImagePickerController isSourceTypeAvailable:
+             UIImagePickerControllerSourceTypePhotoLibrary])
+        {
+            UIImagePickerController *imagePicker =
+            [[UIImagePickerController alloc] init];
+            imagePicker.delegate = self;
+            imagePicker.sourceType =
+            UIImagePickerControllerSourceTypePhotoLibrary;
+            imagePicker.mediaTypes = @[(NSString *) kUTTypeImage];
+            imagePicker.allowsEditing = NO;
+            [self presentViewController:imagePicker
+                               animated:YES completion:nil];
+            _newMedia = NO;
+        }
         
-        [twitter getUserTimelineWithScreenName:@"TotalFratMove" successBlock:^(NSArray *statuses) {
-            [self.twitterFeed removeAllObjects];
-            self.twitterFeed = [NSMutableArray arrayWithArray:statuses];
-            //[self tweetsLoaded];
-            [self loadTwitterScrollView];
+    } else {
+        NSLog (@"error with action sheet");
+    }
+    NSLog(@"Button at index: %ld clicked\nIt's title is '%@'", (long)buttonIndex, [actionSheet buttonTitleAtIndex:buttonIndex]);
+}
+-(void)imagePickerController:
+(UIImagePickerController *)picker
+didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    NSString *mediaType = info[UIImagePickerControllerMediaType];
+    attachments = [[NSMutableArray alloc] init];
+    if ([mediaType isEqualToString:(NSString *)kUTTypeImage])
+    {
+        // Media is an image
+        UIImage *image = info[UIImagePickerControllerOriginalImage];
+        [attachments addObject:image];
+        //save image to gallery
+        if (_newMedia == YES) {
             
-        } errorBlock:^(NSError *error) {
-            NSLog(@"getUserTimeline ERROR");
-            NSLog(@"%@", error.debugDescription);
+            UIImageWriteToSavedPhotosAlbum(image, self,
+                                           @selector(image:finishedSavingWithError:contextInfo:),
+                                           nil);
+        }
+    }
+    else if ([mediaType isEqualToString:(NSString *)kUTTypeMovie])
+    {
+        // Media is a video
+        NSURL *url = info[UIImagePickerControllerMediaURL];
+        NSString *videoPath = [url path];
+        
+        [attachments addObject:videoPath];
+        //save video to gallery
+        if (_newMedia == YES) {
+            
+            if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(videoPath))
+            {
+                UISaveVideoAtPathToSavedPhotosAlbum(videoPath,
+                                                    self,
+                                                    @selector(video:finishedSavingWithError:contextInfo:),
+                                                    nil);
+            }
+        }
+    }
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(void)image:(UIImage *)image
+finishedSavingWithError:(NSError *)
+error contextInfo:(void *)contextInfo
+{
+    if (error) {
+        
+        UIAlertView *alert = [[UIAlertView alloc]
+                              initWithTitle: @"Save failed"
+                              message: @"Failed to save image"
+                              delegate: nil
+                              cancelButtonTitle:@"OK"
+                              otherButtonTitles:nil];
+        [alert show];
+    }
+}
+
+-(void)video:(NSString *)video
+finishedSavingWithError:(NSError *)
+error contextInfo:(void *)contextInfo
+{
+    if (error) {
+        UIAlertView *alert = [[UIAlertView alloc]
+                              initWithTitle: @"Save failed"
+                              message: @"Failed to save video"
+                              delegate: nil
+                              cancelButtonTitle:@"OK"
+                              otherButtonTitles:nil];
+        [alert show];
+    }
+}
+
+-(void)imagePickerControllerDidCancel:
+(UIImagePickerController *)picker
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)textFieldDidChange:(UITextField *)textField2 {
+    
+    if ([textField2.text length] != 0) {
+        [button setTitleColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0] forState:UIControlStateNormal];
+    } else {
+        [button setTitleColor:[UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1] forState:UIControlStateNormal];
+    }
+    
+}
+
+#pragma mark - load from Parse
+-(void)getMessages {
+    NSMutableParagraphStyle *style =  [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    UIFont *labelFont = [UIFont fontWithName:@"AppleSDGothicNeo-Thin" size:14 ];
+    
+    //style.alignment = NSTextAlignmentJustified;
+    style.firstLineHeadIndent = 5.0f;
+    style.headIndent = 5.0f;
+    //style.tailIndent = 1.0f;
+    
+    
+    
+    upVotedArray = [[NSMutableArray alloc] init];
+    messages = [[NSMutableArray alloc] init];
+    
+    //fetch messages
+    PFQuery *query2 = [PFQuery queryWithClassName:@"chats"];
+    [query2 whereKey:@"chapterID" equalTo:self.chapterID];
+    [query2 orderByAscending:@"createdAt"];
+    
+    [query2 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        numberOfObjects = objects.count;
+        objectCounter = 0;
+        
+        if (!error) {
+            
+            NSLog(@"Successfully retrieved %lu messages.", (unsigned long)objects.count);
+            
+            for (PFObject *object in objects) {
+                objectCounter++;
+                //NSLog(@"%@", object.objectId);
+                //NSLog(@"LOCATION:%@",object[@"location"]);
+                MessageObject *messageObj = [[MessageObject alloc] init];
+                
+                upVotedArray = object[@"upVoted"];
+                
+                NSString *message = object[@"text"];
+                
+                NSMutableAttributedString *attributedMessage = [[NSMutableAttributedString alloc] initWithString:message attributes:@{NSParagraphStyleAttributeName: style}];
+                [attributedMessage addAttribute:NSFontAttributeName value:labelFont range:NSMakeRange(0, [attributedMessage length])];
+                
+                BOOL selected = [object[@"selected"] boolValue];
+                
+                messageObj.selected = selected;
+                messageObj.message = attributedMessage;
+                messageObj.user = object[@"user"];
+                messageObj.timestamp = object[@"createdAt"];
+                //messageObj.voteCount = [[object objectForKey:@"voteCount"] integerValue];
+                messageObj.voteCount = upVotedArray.count;
+                
+                for (int i = 0; i < upVotedArray.count; i++) {
+                    if( [[PFUser currentUser].objectId isEqualToString:[upVotedArray objectAtIndex:i]] ) {
+                        messageObj.selected = YES;
+                    }
+                }
+                
+                [messages addObject:messageObj];
+                
+                if (objectCounter == numberOfObjects) {
+                    [self.chatTableView reloadData];
+                    NSIndexPath *lastMessageIP = [NSIndexPath indexPathForRow:numberOfObjects-1 inSection:0];
+                    [self.chatTableView scrollToRowAtIndexPath:lastMessageIP atScrollPosition:NULL animated:YES];
+                }
+                
+                NSLog(@"upVotedArray:%lu",(unsigned long)upVotedArray.count);
+                
+            }
+        } else {
+            // Log details of the failure
+            NSLog(@"Error: %@ %@", error, [error userInfo]);
+            
+        }
+        //[self.overlay_ performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+    }];
+    
+    
+    
+}
+
+#pragma mark - pressedUp method
+
+-(void)pressedUp:(UIButton *)button {
+    //NSLog(@"%ld",(long)button.tag);
+    NSUInteger index = button.tag;
+    __block NSUInteger voteCounterBlock;
+    
+    if ([button isSelected]) {
+        
+        [button setSelected:NO];
+        //__block NSInteger *voteCounter = [[NSInteger alloc] init];
+        
+        
+        PFQuery *query = [PFQuery queryWithClassName:@"chats"];
+        [query whereKey:@"chapterID" equalTo:self.chapterID];
+        [query orderByAscending:@"createdAt"];
+        [query findObjectsInBackgroundWithBlock:^(NSArray *messagesBlock, NSError *error) {
+            if (!error) {
+                // Found UserStats
+                
+                __block PFObject *message = [messagesBlock objectAtIndex:index];
+                
+                MessageObject *tempMessageObject = [messages objectAtIndex:button.tag];
+                tempMessageObject.selected = false;
+                voteCounterBlock = tempMessageObject.voteCount;
+                voteCounterBlock--;
+                tempMessageObject.voteCount = voteCounterBlock;
+                
+                [messages replaceObjectAtIndex:button.tag withObject:tempMessageObject];
+                
+                //[message incrementKey:@"voteCount" byAmount:[NSNumber numberWithInt:-1]];
+                NSMutableArray *userID = [[NSMutableArray alloc] init];
+                [userID addObject:[PFUser currentUser].objectId];
+                [message removeObjectsInArray:userID forKey:@"upVoted"];
+                [message saveInBackground];
+                //[userStats setObject:newScore forKey:@"latestScore"];
+                NSLog(@"Successfully retrieved %lu scores. %@", (unsigned long)messagesBlock.count, message);
+                
+                [self.chatTableView reloadData];
+                
+                // Save
+                //[userStats saveInBackground];
+            } else {
+                // Did not find any UserStats for the current user
+                NSLog(@"Error: %@", error);
+            }
         }];
         
         
         
-    } errorBlock:^(NSError *error) {
-        NSLog(@"verify credentials ERROR");
-        NSLog(@"%@", error.debugDescription);
+    } else {
         
-    }];
+        [button setSelected:YES];
+        PFQuery *query = [PFQuery queryWithClassName:@"chats"];
+        [query whereKey:@"chapterID" equalTo:self.chapterID];
+        [query orderByAscending:@"createdAt"];
+        [query findObjectsInBackgroundWithBlock:^(NSArray *messagesBlock, NSError *error) {
+            if (!error) {
+                // Found UserStats
+                
+                __block PFObject *message = [messagesBlock objectAtIndex:index];
+                
+                MessageObject *tempMessageObject = [messages objectAtIndex:button.tag];
+                tempMessageObject.selected = true;
+                voteCounterBlock = tempMessageObject.voteCount;
+                voteCounterBlock++;
+                tempMessageObject.voteCount = voteCounterBlock;
+                
+                [messages replaceObjectAtIndex:button.tag withObject:tempMessageObject];
+                //[message incrementKey:@"voteCount" byAmount:[NSNumber numberWithInt:1]];
+                
+                NSMutableArray *userID = [[NSMutableArray alloc] init];
+                [userID addObject:[PFUser currentUser].objectId];
+                [message addObjectsFromArray:userID forKey:@"upVoted"];
+                [message saveInBackground];
+                
+                NSLog(@"Successfully retrieved %lu scores. %@", (unsigned long)messagesBlock.count, message);
+                
+                [self.chatTableView reloadData];
+                
+                //[userStats setObject:newScore forKey:@"latestScore"];
+                
+                // Save
+                //[userStats saveInBackground];
+            } else {
+                // Did not find any UserStats for the current user
+                NSLog(@"Error: %@", error);
+            }
+        }];
+    }
 }
+
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-- (void)valueChanged:(UISegmentedControl *)segment {
+
+#pragma mark - Keyboard Methods
+
+- (void)keyboardWillAppear:(NSNotification *)notification
+{
     
-    if(segment.selectedSegmentIndex == 0) {
-        //action for the first button (All)
-    }else if(segment.selectedSegmentIndex == 1){
-        //action for the second button (Present)
-    }else if(segment.selectedSegmentIndex == 2){
-        //action for the third button (Missing)
-    }
+    
+    NSDictionary *userInfo = [notification userInfo];
+    CGSize keyboardSize = [[userInfo objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    
+    UIEdgeInsets contentInsets = UIEdgeInsetsMake(0.0, 0.0, keyboardSize.height, 0.0);
+    [self.chatTableView setContentInset:contentInsets];
+    [self.chatTableView setScrollIndicatorInsets:contentInsets];
+    
+    CGRect messageFrame = self.messageTextView.frame;
+    messageFrame.origin.y -= keyboardSize.height;
+    [self.messageTextView setFrame:messageFrame];
 }
 
-//- (PFQuery *)queryForTable {
-//    PFQuery *query = [PFQuery queryWithClassName:self.parseClassName];
-//    NSLog(@"chapterID: %@", self.chapterID);
-//    [query whereKey:@"chapterID" equalTo:self.chapterID];
-//
-//    // If no objects are loaded in memory, we look to the cache first to fill the table
-//    // and then subsequently do a query against the network.
-//    if (self.objects.count == 0) {
-//        query.cachePolicy = kPFCachePolicyCacheThenNetwork;
-//    }
-//
-//    [query orderByDescending:@"createdAt"];
-//
-//    return query;
-//}
+- (void)keyboardWillDisappear:(NSNotification *)notification
+{
+    NSDictionary *userInfo = [notification userInfo];
+    CGSize keyboardSize = [[userInfo objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:0.25];
+    [self.chatTableView setContentInset:UIEdgeInsetsZero];
+    [UIView commitAnimations];
+    [self.chatTableView setScrollIndicatorInsets:UIEdgeInsetsZero];
+    
+    CGRect messageFrame = self.messageTextView.frame;
+    messageFrame.origin.y += keyboardSize.height;
+    [self.messageTextView setFrame:messageFrame];
+}
+
 
 #pragma mark - Table view data source
 
@@ -498,7 +706,7 @@
 #warning Incomplete method implementation.
     // Return the number of rows in the section.
     //return [messages count];
-    return 19;
+    return numberOfObjects;
 }
 
 
@@ -525,6 +733,7 @@
     //CGSize sizeDynamic  = [[messageArray objectAtIndex:indexPath.row] sizeWithFont:[UIFont fontWithName:@"Arial-BoldMT" size:14] constrainedToSize:CGSizeMake(CGFLOAT_MAX,CGFLOAT_MAX) lineBreakMode:NSLineBreakByWordWrapping];
     
     if (messages.count != 0) {
+        
         cell.avatar.image = [UIImage imageNamed:@"avatar.jpg"];
         cell.imageView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
         cell.avatar.layer.masksToBounds = YES;
@@ -534,31 +743,11 @@
         cell.avatar.layer.rasterizationScale = [UIScreen mainScreen].scale;
         cell.avatar.layer.shouldRasterize = YES;
         cell.avatar.clipsToBounds = YES;
-        [cell.upVoteButton addTarget:self action:@selector(pressedUp:) forControlEvents:UIControlEventTouchUpInside];//[cell.upVoteButton performSelector:@selector(pressedUp:) withObject:[NSNumber numberWithInt:(int)indexPath.row]];
-
-        //[cell.upVoteButton addTarget:self action:@selector(pressedUp:) withObject:[NSNumber numberWithInt:(int)indexPath.row ]];
+        
         //cell.textLabel.text = [messageArray objectAtIndex:indexPath.row];
         //cell.textLabel.frame = CGRectMake(20,20,200,800);
-        
-        //UIButton *upButton = [[UIButton alloc]init];//
-        //upButton.frame=CGRectMake(268, 0, 33, 44);
-        //upButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        //[upButton setImage:[UIImage imageNamed:@"arrow-up-20x.png"] forState:UIControlStateNormal];
-        //[upButton addTarget:self action:@selector(pressedUp:) withObject:[messages objectAtIndex:indexPath.row] ];
-        //[upButton performSelector:@selector(pressedUp:) withObject:[NSNumber numberWithInt:(int)indexPath.row]];
-        //[self performSelectorOnMainThread:@selector(pressedUp:) withObject:[NSNumber numberWithInt:(int)indexPath] waitUntilDone:NO];
-
-        //[cell.contentView addSubview:upButton];
-        
-        
-        
-        
-        
-        
-        
-        //[upButton performSelector:@selector(pressedUp:) withObject:[NSNumber numberWithInt:(int)indexPath.row]];
-        
-        
+        cell.upVoteButton.tag = indexPath.row;
+        [cell.upVoteButton addTarget:self action:@selector(pressedUp:)  forControlEvents:UIControlEventTouchUpInside];
         [cell.textLabel sizeToFit];
         //frame.origin.x = 10; //move the frame over..this adds the padding!
         //frame.size.width = self.view.bounds.size.width - frame.origin.x;
@@ -573,6 +762,11 @@
         cell.textLabel.backgroundColor = [UIColor whiteColor];
         cell.textLabel.layer.cornerRadius = 3.0f;
         MessageObject *tempMessageObject = [messages objectAtIndex:indexPath.row];
+        [cell.voteCount setText:[NSString stringWithFormat:@"%lu",(unsigned long)tempMessageObject.voteCount]];
+        //cell.voteCount.text = [NSString stringWithFormat:@"%lu",(unsigned long)tempMessageObject.voteCount];
+        if (tempMessageObject.selected) {
+            [cell.upVoteButton setSelected:YES];
+        }
         cell.textLabel.attributedText = tempMessageObject.message;
         //[messages addObject:object];
         //cell.textLabel.attributedText = [messages objectAtIndex:indexPath.row];
@@ -588,9 +782,6 @@
     return cell;
 }
 
--(void)pressedUp:(NSNumber *)indexPath {
-    NSLog(@"index path:%@",indexPath);
-}
 
 -(float)height :(NSMutableAttributedString*)string
 {
@@ -623,14 +814,12 @@
         MessageObject *tempObj = [messages objectAtIndex:indexPath.row];
         NSAttributedString *string = tempObj.message;
         CGFloat heightOfcell = [self height:(NSMutableAttributedString*)string];
-        NSLog(@"%f",heightOfcell);
+        //NSLog(@"%f",heightOfcell);
         
         return heightOfcell+50;
     }
     return 50;
 }
-
-
 #pragma mark - Table view delegate
 
 // In a xib-based application, navigation from a table can be handled in -tableView:didSelectRowAtIndexPath:

@@ -166,6 +166,7 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == 0 && indexPath.row == 0) {
         HomeViewController *homeViewController = [[HomeViewController alloc] init];
+        homeViewController.chapterID = self.chapterID;
         NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:homeViewController];
         self.frostedViewController.contentViewController = navigationController;
     } else if (indexPath.section == 0 && indexPath.row == 1){

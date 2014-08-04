@@ -86,8 +86,6 @@
                   clientKey:@"8JSNQYaHXzGHEoAUBYDGbfe6WEhehcwFCLDuEaXr"];
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
     [GMSServices provideAPIKey:@"AIzaSyAzfyaz2qzrZfOSqXutD0dYxcyGpT47Wl8"];
-
-
     
 //    if ([PFUser currentUser]) {
 //        NSLog(@"AppDelegate:logged in");

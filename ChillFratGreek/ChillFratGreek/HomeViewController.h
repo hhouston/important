@@ -17,6 +17,7 @@
 @property (strong, nonatomic) NSString *chapterID;
 @property (assign, nonatomic) NSInteger index;
 @property (strong, nonatomic) UITableView *chatTableView;
+@property (strong, nonatomic) UIView *messageTextView;
+@property BOOL newMedia;
 
-//@property (strong, nonatomic) IBOutlet UIButton *upButton;
 @end

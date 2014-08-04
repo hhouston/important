@@ -13,7 +13,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *avatar;
 @property (weak, nonatomic) IBOutlet UILabel *voteCount;
 @property (weak, nonatomic) IBOutlet UIButton *upVoteButton;
-@property (assign, nonatomic) NSUInteger voteCounter;
+@property (assign, nonatomic) NSNumber *voteCounter;
 
 - (IBAction)upVote:(id)sender;
 

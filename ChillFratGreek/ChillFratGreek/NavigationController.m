@@ -27,7 +27,9 @@
                              forBarMetrics:UIBarMetricsDefault];
     self.navigationBar.shadowImage = [UIImage new];
     self.navigationBar.translucent = YES;
-//    self.navigationBar.backgroundColor = [UIColor whiteColor];
+    //self.navigationBar.backgroundColor =  [UIColor colorWithRed:230.0/255 green:230.0/255 blue:230.0/255 alpha:1];
+
+    //self.navigationBar.backgroundColor = [UIColor colorWithRed:(125/255.0) green:(38/255.0) blue:(205/255.0) alpha:.9];
     [self.view addGestureRecognizer:[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)]];
 }
 
