@@ -8,6 +8,7 @@
 
 #import "ChatTableViewCell.h"
 #import <Parse/Parse.h>
+#import "HomeViewController.h"
 
 @interface ChatTableViewCell () {
     NSUInteger voteCounter;
@@ -51,9 +52,11 @@
 }
 
 - (IBAction)upVote:(id)sender {
-    
+
+
+
 //    PFQuery *query = [PFQuery queryWithClassName:@"chats"];
-//    [query whereKey:@"chapterID" equalTo:self.chapterID];
+//    [query whereKey:@"objectID" equalTo:self.chapterID];
 //    [query getFirstObjectInBackgroundWithBlock:^(PFObject * rusheeObj, NSError *error) {
 //        if (!error) {
 //            // Found UserStats
@@ -67,19 +70,19 @@
 //            NSLog(@"Error: %@", error);
 //        }
 //    }];
-    
-    if ([self.upVoteButton isSelected]) {
-        
-        [self.upVoteButton setSelected:NO];
-        voteCounter--;
-        
-    } else {
-        
-        [self.upVoteButton setSelected:YES];
-        voteCounter++;
-
-
-    }
+//    
+//    if ([self.upVoteButton isSelected]) {
+//        
+//        [self.upVoteButton setSelected:NO];
+//        voteCounter--;
+//        
+//    } else {
+//        
+//        [self.upVoteButton setSelected:YES];
+//        voteCounter++;
+//
+//
+//    }
     
 }
 
