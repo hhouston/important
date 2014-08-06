@@ -14,6 +14,10 @@
 @property (strong, nonatomic) NSString *user;
 @property (strong, nonatomic) NSDate *timestamp;
 @property (assign, nonatomic) NSUInteger voteCount;
+@property (strong, nonatomic) UIImage *image;
+@property (strong, nonatomic) NSURL *url;
+@property (strong, nonatomic) NSData *data;
 @property (strong, nonatomic) NSMutableArray *upVotersArray;
+@property (strong, nonatomic) NSString *type;
 @property (assign, nonatomic) BOOL selected;
 @end

@@ -39,8 +39,8 @@
     
     NSLog(@"registering...");
     self.alias = self.username.text;
-    self.chapterID = self.chapterCode.text;
-
+    //self.chapterID = self.chapterCode.text;
+    self.chapterID = @"pyF467c6Oc";
     PFUser *newUser = [PFUser user];
     newUser.username = self.alias;
     newUser.password = self.passcode.text;
@@ -56,11 +56,11 @@
             
             [self saveProfile];
             
-            
+            HomeViewController *hvc = [[HomeViewController alloc] init];
             AppDelegate *ad = (AppDelegate *)[[UIApplication sharedApplication] delegate];
             ad.window.rootViewController = [[UIViewController alloc] init];
             
-            NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:[[HomeViewController alloc] init]];
+            NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:hvc];
             MenuViewController *menuController = [[MenuViewController alloc] initWithStyle:UITableViewStylePlain];
             //    // Create frosted view controller
             //    //
@@ -69,7 +69,10 @@
             frostedViewController.liveBlurBackgroundStyle = REFrostedViewControllerLiveBackgroundStyleLight;
             frostedViewController.liveBlur = YES;
             frostedViewController.delegate = ad.self;
-            //
+            
+            hvc.chapterID = self.chapterID;
+            hvc.alias = self.alias;
+            
             //    // Make it a root controller
             //    //
             ad.self.window.rootViewController = frostedViewController;

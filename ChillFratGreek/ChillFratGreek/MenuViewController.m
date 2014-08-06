@@ -17,6 +17,7 @@
 #import "ProfileObject.h"
 #import "AppDelegate.h"
 #import "utilities.h"
+#import "LogInViewController.h"
 
 @interface MenuViewController ()
 @property (nonatomic,strong)NSArray* fetchedProfilesArray;
@@ -163,6 +164,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == 0 && indexPath.row == 0) {
         HomeViewController *homeViewController = [[HomeViewController alloc] init];
@@ -191,7 +193,13 @@
         NavigationController *navigationController = [[NavigationController alloc ] initWithRootViewController:wvc];
         
         self.frostedViewController.contentViewController = navigationController;
-    } else if (indexPath.section == 0 && indexPath.row == 4) {
+    } else if (indexPath.section == 0 && indexPath.row == 5) {
+        [PFUser logOut];
+        LogInViewController *lvc = [[LogInViewController alloc] init];
+        lvc = [storyboard instantiateViewControllerWithIdentifier:@"lvc"];
+        NSLog(@"show lvc");
+        
+        [self presentViewController:lvc animated:YES completion:nil];
         //fapvc = [[FindAPledgeViewController alloc] init];
         //fapvc.chapterID = self.chapterID;
         //NavigationController *navigationController = [[NavigationController alloc ] initWithRootViewController:fapvc];
@@ -230,7 +238,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
     
-        NSArray *titles = @[@"Home", @"Rush List", @"find a pledge",@"whiteboard", @"Party", @"settings", @"rush tits"];
+        NSArray *titles = @[@"Home", @"Rush List", @"find a pledge",@"whiteboard", @"Party", @"Log Out"];
         cell.textLabel.text = titles[indexPath.row];
 
     

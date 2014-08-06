@@ -56,7 +56,6 @@
         
         
     } else {
-//
         
         self.fetchedProfilesArray = [[NSArray alloc] init];
         
@@ -74,20 +73,39 @@
         
         NSLog(@"CHECKLOGIN:%@------%@",self.alias, self.chapterID);
 
+//        HomeViewController *hvc = [[HomeViewController alloc] init];
+//        hvc = [storyboard instantiateViewControllerWithIdentifier:@"hvc"];
+//
+//        NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:hvc];
+//        self.frostedViewController.contentViewController = navigationController;
+
+        AppDelegate *ad = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        ad.window.rootViewController = [[UIViewController alloc] init];
         HomeViewController *hvc = [[HomeViewController alloc] init];
-        hvc = [storyboard instantiateViewControllerWithIdentifier:@"hvc"];
-
         NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:hvc];
-        self.frostedViewController.contentViewController = navigationController;
-
+        MenuViewController *menuController = [[MenuViewController alloc] initWithStyle:UITableViewStylePlain];
+        //    // Create frosted view controller
+        //    //
+        REFrostedViewController *frostedViewController = [[REFrostedViewController alloc] initWithContentViewController:navigationController menuViewController:menuController];
+        frostedViewController.direction = REFrostedViewControllerDirectionLeft;
+        frostedViewController.liveBlurBackgroundStyle = REFrostedViewControllerLiveBackgroundStyleLight;
+        frostedViewController.liveBlur = YES;
+        frostedViewController.delegate = ad.self;
         
+        hvc.chapterID = self.chapterID;
+        hvc.alias = self.alias;
+        //    // Make it a root controller
+        //    //
+        ad.self.window.rootViewController = frostedViewController;
+        ad.self.window.backgroundColor = [UIColor whiteColor];
+        [ad.self.window makeKeyAndVisible];
+
         //HomeViewController *hvc = [[HomeViewController alloc] init];
         //hvc = [storyboard instantiateViewControllerWithIdentifier:@"hvc"];
         //MenuViewController *mvc = [[MenuViewController alloc] init];
         //mvc.chapterID = self.chapterID;
         //mvc.alias = self.alias;
-        hvc.chapterID = self.chapterID;
-        hvc.alias = self.alias;
+
 ////        hvc = [self.storyboard instantiateViewControllerWithIdentifier:@"hvc"];
 //        //[self presentViewController:hvc animated:YES completion:nil];
 //        NSLog(@"show hvc");

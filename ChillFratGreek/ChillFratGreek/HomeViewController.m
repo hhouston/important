@@ -22,6 +22,7 @@
 #import "ChatTableViewController.h"
 #import "MessageObject.h"
 #import <MobileCoreServices/MobileCoreServices.h>
+#import <AVFoundation/AVFoundation.h>
 
 #define pageCount 3.0
 #define kOFFSET_FOR_KEYBOARD 215.0
@@ -61,6 +62,28 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
     BOOL viewLoaded;
     
     NSMutableArray *attachments;
+    UIProgressView *progressViewText;
+    BOOL messageSendFailed;
+    NSTimer *textTimer;
+    BOOL imageAttachment;
+    
+    int textCounter;
+    float textProgressFloat;
+    BOOL textSent;
+    BOOL attachmentAdded;
+    
+    UIProgressView *progressViewImage;
+    int imageCounter;
+    float imageProgressFloat;
+    BOOL imageSent;
+    
+    UIProgressView *progressViewVideo;
+    int videoCounter;
+    float videoProgressFloat;
+    BOOL videoSent;
+    
+    int imageButtonCounter;
+    
 }
 
 @property (nonatomic,strong)NSArray* fetchedProfilesArray;
@@ -82,7 +105,7 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
     [self getMessages];
     [self chatBackgroundView];
     [self navBar];
-    
+    [self registerUserForPushNotification];
     //[self setupMessageTextView];
     
     //fiji badge
@@ -102,7 +125,10 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
     [super viewWillAppear:animated];
     //NSIndexPath *lastMessageIP = [NSIndexPath indexPathForRow:numberOfObjects-1 inSection:0] ;
     
-    [self getMessages];
+    if (attachmentAdded == YES) {
+        [self getMessages];
+        attachmentAdded = NO;
+    }
     //[self.chatTableView scrollToRowAtIndexPath:lastMessageIP atScrollPosition:NULL animated:YES];
     
     if (viewLoaded == NO) {
@@ -202,6 +228,33 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
     
     settingsImage = [[UIImage imageNamed:@"cogs.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:settingsImage style:UIBarButtonItemStylePlain target:(NavigationController *)self.navigationController action:@selector(showSettings)];
+    
+    progressViewText = [[UIProgressView alloc] init];
+    progressViewText.frame = CGRectMake(0,44,self.view.frame.size.width,1.0);
+    [progressViewText setProgressViewStyle:UIProgressViewStyleBar];
+    [progressViewText setUserInteractionEnabled:NO];
+    [progressViewText setProgressTintColor:[UIColor blueColor]];
+    [progressViewText setTrackTintColor:[UIColor clearColor]];
+    progressViewText.progress = 0;
+    [self.navigationController.navigationBar addSubview:progressViewText];
+    
+    progressViewImage = [[UIProgressView alloc] init];
+    progressViewImage.frame = CGRectMake(0,44,self.view.frame.size.width,1.0);
+    [progressViewImage setProgressViewStyle:UIProgressViewStyleBar];
+    [progressViewImage setUserInteractionEnabled:NO];
+    [progressViewImage setProgressTintColor:[UIColor greenColor]];
+    [progressViewImage setTrackTintColor:[UIColor clearColor]];
+    progressViewImage.progress = 0;
+    [self.navigationController.navigationBar addSubview:progressViewImage];
+    
+    progressViewVideo = [[UIProgressView alloc] init];
+    progressViewVideo.frame = CGRectMake(0,44,self.view.frame.size.width,1.0);
+    [progressViewVideo setProgressViewStyle:UIProgressViewStyleBar];
+    [progressViewVideo setUserInteractionEnabled:NO];
+    [progressViewVideo setProgressTintColor:[UIColor redColor]];
+    [progressViewVideo setTrackTintColor:[UIColor clearColor]];
+    progressViewVideo.progress = 0;
+    [self.navigationController.navigationBar addSubview:progressViewVideo];
 }
 
 -(void)setUpTableView {
@@ -218,7 +271,7 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
     self.chatTableView.dataSource = self;
     self.chatTableView.delegate = self;
     //self.chatTableView.alpha = .70;
-    //self.chatTableView.backgroundColor = [UIColor redColor];
+    //self.chatTableView.backgroundColor = [UIColor blackColor];
     //self.chatTableView.alpha = .7;
     self.chatTableView.backgroundColor = [UIColor colorWithRed:(125/255.0) green:(38/255.0) blue:(205/255.0) alpha:.9];
     //self.overlay_.backgroundColor = HEXCOLOR(663399);
@@ -314,33 +367,30 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
 }
 
 - (void)sendButtonPressed {
+    
+    if ([attachments count] == 1 && imageAttachment == YES) {
+        imageCounter = 0;
+        imageProgressFloat = 0.0;
+        [self uploadImage];
+        
+    } else if ([attachments count] == 1 && imageAttachment == NO) {
+        
+        [self uploadVideo];
+        
+    }
+    
     if ([textField.text length] != 0) {
-        
-        PFObject *object = [PFObject objectWithClassName:@"chats"];
-        object[@"chapterID"] = self.chapterID;
-        object[@"user"] = [PFUser currentUser];
-        object[@"text"] = textField.text;
-        
-        UIImage *tempImage = [attachments objectAtIndex:0];
-        NSData *imageData = UIImagePNGRepresentation(tempImage);
-        PFFile *newImageFile = [PFFile fileWithName:@"Levis.png" data:imageData];
-        [object setObject:newImageFile forKey:@"image"];
-        
-        [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error)
-         {
-             if (error == nil)
-             {
-                 [JSQSystemSoundPlayer jsq_playMessageSentSound];
-                 [self getMessages];
-                 textField.text = @"";
-                 [button setTitleColor:[UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1] forState:UIControlStateNormal];
-                 
-             }
-             else [ProgressHUD showError:@"Network error"];;
-         }];
-        
-    } else {
-        [ProgressHUD showError:@"type something..."];
+        //[self performSelector:@selector(textProgressBar) withObject:nil afterDelay:0.1];
+        //textTimer = [NSTimer timerWithTimeInterval:0.01667 target:self selector:@selector(textProgressBar) userInfo:nil repeats:YES];
+        //[[NSRunLoop currentRunLoop] addTimer:textTimer forMode:NSDefaultRunLoopMode];
+        textCounter = 0;
+        textProgressFloat = 0.0;
+        [self textProgressBar];
+        [self uploadText];
+    }
+    
+    if ([textField.text length] == 0 && [attachments count] == 0){
+        [ProgressHUD showError:@"nothing to send..."];
     }
 }
 
@@ -348,7 +398,221 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Take picture/video", @"Choose existing", nil];
     [actionSheet showInView:[UIApplication sharedApplication].keyWindow];
     //[actionSheet showInView:self.view];
+}
+
+# pragma upload media to Parse db
+
+- (void) uploadImage {
     
+    PFObject *imageObject = [PFObject objectWithClassName:@"chats"];
+    imageObject[@"chapterID"] = self.chapterID;
+    imageObject[@"user"] = [PFUser currentUser];
+    
+    UIImage *tempImage = [attachments objectAtIndex:0];
+    NSData *imageData = UIImagePNGRepresentation(tempImage);
+    NSUInteger imageSize = imageData.length;
+    NSLog(@"image size:%lu",(unsigned long)imageSize);
+    
+    if (imageSize > 10485760) {
+        [ProgressHUD showError:@"Upload failed:file to large"];
+        imageSent = NO;
+    } else {
+        [self imageProgressBar];
+        PFFile *newImageFile = [PFFile fileWithName:@"Levis.png" data:imageData];
+        [imageObject setObject:newImageFile forKey:@"image"];
+        
+        [imageObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error)
+         {
+             if (error == nil)
+             {
+                 imageSent = YES;
+                 [JSQSystemSoundPlayer jsq_playMessageSentSound];
+                 [self getMessages];
+                 textField.text = @"";
+                 [button setTitleColor:[UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1] forState:UIControlStateNormal];
+                 
+             }
+             else {
+                 imageSent = NO;
+                 [ProgressHUD showError:@"Network error"];
+             }
+         }];
+    }
+}
+
+- (void) uploadVideo {
+    
+    PFObject *videoObject = [PFObject objectWithClassName:@"chats"];
+    videoObject[@"chapterID"] = self.chapterID;
+    videoObject[@"user"] = [PFUser currentUser];
+    //change to url
+    MessageObject *tempVideo = [[MessageObject alloc] init];
+    tempVideo = [attachments objectAtIndex:0];
+    
+    NSUInteger videoSize = tempVideo.data.length;
+    NSLog(@"image size:%lu",(unsigned long)videoSize);
+    
+    if (videoSize > 10485760) {
+        [ProgressHUD showError:@"Upload failed:file to large"];
+        videoSent = NO;
+    } else {
+        [self videoProgressBar];
+        PFFile *videoFile = [PFFile fileWithData:tempVideo.data];
+        //videoFile.url = tempVideo.url;
+        
+        [videoObject setObject:videoFile forKey:@"video"];
+    
+    [videoObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error)
+     {
+         if (error == nil)
+         {
+             videoSent = YES;
+             [JSQSystemSoundPlayer jsq_playMessageSentSound];
+             [self getMessages];
+             textField.text = @"";
+             [button setTitleColor:[UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1] forState:UIControlStateNormal];
+             
+         }
+         else {
+             videoSent = NO;
+             [ProgressHUD showError:@"Network error"];
+         }
+     }];
+    }
+}
+
+- (void) uploadText {
+    
+    PFObject *textObject = [PFObject objectWithClassName:@"chats"];
+    textObject[@"chapterID"] = self.chapterID;
+    textObject[@"user"] = [PFUser currentUser];
+    textObject[@"text"] = textField.text;
+    
+    [textObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error)
+     {
+         if (error == nil)
+         {
+             //[self finishTextProgressBar];
+             textSent = YES;
+             [self getMessages];
+             textField.text = @"";
+             [button setTitleColor:[UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1] forState:UIControlStateNormal];
+             
+         }
+         else {
+             textSent = NO;
+             [ProgressHUD showError:@"Network error"];
+         }
+     }];
+    
+}
+# pragma progress update
+- (void)textProgressBar {
+    
+    if(textProgressFloat < .8 && textSent == NO) {
+        
+        textCounter += 1;
+        textProgressFloat = textCounter/300.0;
+        progressViewText.progress = textProgressFloat;
+        [self performSelector:@selector(textProgressBar) withObject:nil afterDelay:0.05];
+    } else {
+        
+        [self finishTextProgressBar];
+        
+    }
+    
+}
+
+- (void) finishTextProgressBar {
+    
+    if (progressViewText.progress != 1.0) {
+        
+        textCounter += 1;
+        textProgressFloat = textCounter/10.0;
+        progressViewText.progress = textProgressFloat;
+        [self performSelector:@selector(finishTextProgressBar) withObject:nil afterDelay:0.1];
+        
+    } else if (progressViewText.progress == 1.0) {
+        
+        NSLog(@"MESSAGE SENT");
+        [JSQSystemSoundPlayer jsq_playMessageSentSound];
+        
+        progressViewText.progress = 0.0;
+        textProgressFloat = 0.0;
+        textCounter = 0.0;
+    }
+}
+
+- (void)imageProgressBar {
+    
+    if(imageProgressFloat < .8 && imageSent == NO) {
+        
+        imageCounter += 1;
+        imageProgressFloat = imageCounter/300.0;
+        progressViewImage.progress = imageProgressFloat;
+        [self performSelector:@selector(imageProgressBar) withObject:nil afterDelay:0.05];
+    } else {
+        
+        [self finishImageProgressBar];
+        
+    }
+    
+}
+
+- (void) finishImageProgressBar {
+    
+    if (progressViewImage.progress != 1.0) {
+        
+        textCounter += 1;
+        imageProgressFloat = imageCounter/10.0;
+        progressViewImage.progress = imageProgressFloat;
+        [self performSelector:@selector(finishImageProgressBar) withObject:nil afterDelay:0.1];
+        
+    } else if (progressViewImage.progress == 1.0) {
+        
+        NSLog(@"IMAGE SENT");
+        [JSQSystemSoundPlayer jsq_playMessageSentSound];
+        
+        progressViewImage.progress = 0.0;
+        imageProgressFloat = 0.0;
+        imageCounter = 0.0;
+    }
+}
+
+- (void)videoProgressBar {
+
+    if(videoProgressFloat < .8 && videoSent == NO) {
+
+        videoCounter += 1;
+        videoProgressFloat = videoCounter/300.0;
+        progressViewVideo.progress = videoProgressFloat;
+        [self performSelector:@selector(videoProgressBar) withObject:nil afterDelay:0.05];
+    } else {
+
+        [self finishVideoProgressBar];
+
+    }
+
+}
+
+- (void) finishVideoProgressBar {
+
+    if (progressViewVideo.progress != 1.0) {
+
+        videoCounter += 1;
+        videoProgressFloat = videoCounter/10.0;
+        progressViewVideo.progress = videoProgressFloat;
+        [self performSelector:@selector(finishVideoProgressBar) withObject:nil afterDelay:0.1];
+
+    } else if (progressViewVideo.progress == 1.0) {
+
+        NSLog(@"Video SENT");
+        [JSQSystemSoundPlayer jsq_playMessageSentSound];
+
+        progressViewVideo.progress = 0.0;
+        videoProgressFloat = 0.0;
+        videoCounter = 0.0;
+    }
 }
 
 # pragma image picker delegate
@@ -391,6 +655,7 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
     }
     NSLog(@"Button at index: %ld clicked\nIt's title is '%@'", (long)buttonIndex, [actionSheet buttonTitleAtIndex:buttonIndex]);
 }
+
 -(void)imagePickerController:
 (UIImagePickerController *)picker
 didFinishPickingMediaWithInfo:(NSDictionary *)info
@@ -402,6 +667,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
         // Media is an image
         UIImage *image = info[UIImagePickerControllerOriginalImage];
         [attachments addObject:image];
+        attachmentAdded = YES;
+        imageAttachment = YES;
         //save image to gallery
         if (_newMedia == YES) {
             
@@ -415,8 +682,14 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
         // Media is a video
         NSURL *url = info[UIImagePickerControllerMediaURL];
         NSString *videoPath = [url path];
-        
-        [attachments addObject:videoPath];
+        NSData *data = [NSData dataWithContentsOfURL:url];
+        NSLog(@"DATA: %@",data);
+        MessageObject *tempVideo = [[MessageObject alloc] init];
+        tempVideo.data = data;
+        tempVideo.url = url;
+        [attachments addObject:tempVideo];
+        attachmentAdded = YES;
+        imageAttachment = NO;
         //save video to gallery
         if (_newMedia == YES) {
             
@@ -515,15 +788,41 @@ error contextInfo:(void *)contextInfo
                 
                 upVotedArray = object[@"upVoted"];
                 
-                NSString *message = object[@"text"];
+                if (object[@"text"] != nil) {
+                    NSString *message = object[@"text"];
+                    NSMutableAttributedString *attributedMessage = [[NSMutableAttributedString alloc] initWithString:message attributes:@{NSParagraphStyleAttributeName: style}];
+                    [attributedMessage addAttribute:NSFontAttributeName value:labelFont range:NSMakeRange(0, [attributedMessage length])];
+                    messageObj.message = attributedMessage;
+                    messageObj.type = @"text";
+                } else if (object[@"image"] != nil) {
+                    messageObj.type = @"image";
+                    PFFile *imageFile = [object objectForKey:@"image"];
+                    [imageFile getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                        if(!error) {
+                            messageObj.image = [UIImage imageWithData:data];
+
+                        }
+                        
+                    }];
+                } else if (object[@"video"] != nil ) {
+                    messageObj.type = @"video";
+                    PFFile *videoFile = [object objectForKey:@"video"];
+                   // __block NSString *urlString = [[NSString alloc] init];
+                    
+                    [videoFile getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                        if (!error) {
+                            //NSString *urlString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]; // Or any other appropriate encoding
+                            //NSURL *url = [[NSURL alloc] initWithString:urlString];
+                            messageObj.data = data;
+                        }
+                        
+                    }];
+                }
                 
-                NSMutableAttributedString *attributedMessage = [[NSMutableAttributedString alloc] initWithString:message attributes:@{NSParagraphStyleAttributeName: style}];
-                [attributedMessage addAttribute:NSFontAttributeName value:labelFont range:NSMakeRange(0, [attributedMessage length])];
                 
-                BOOL selected = [object[@"selected"] boolValue];
+                //BOOL selected = [object[@"selected"] boolValue];
                 
-                messageObj.selected = selected;
-                messageObj.message = attributedMessage;
+                //messageObj.selected = selected;
                 messageObj.user = object[@"user"];
                 messageObj.timestamp = object[@"createdAt"];
                 //messageObj.voteCount = [[object objectForKey:@"voteCount"] integerValue];
@@ -538,6 +837,7 @@ error contextInfo:(void *)contextInfo
                 [messages addObject:messageObj];
                 
                 if (objectCounter == numberOfObjects) {
+                    imageButtonCounter = 0;
                     [self.chatTableView reloadData];
                     NSIndexPath *lastMessageIP = [NSIndexPath indexPathForRow:numberOfObjects-1 inSection:0];
                     [self.chatTableView scrollToRowAtIndexPath:lastMessageIP atScrollPosition:NULL animated:YES];
@@ -609,10 +909,11 @@ error contextInfo:(void *)contextInfo
         
         
     } else {
-        
+        //__block NSString *messageOwnerID = [[NSString alloc] init];
         [button setSelected:YES];
         PFQuery *query = [PFQuery queryWithClassName:@"chats"];
         [query whereKey:@"chapterID" equalTo:self.chapterID];
+        [query includeKey:@"user"];
         [query orderByAscending:@"createdAt"];
         [query findObjectsInBackgroundWithBlock:^(NSArray *messagesBlock, NSError *error) {
             if (!error) {
@@ -620,6 +921,9 @@ error contextInfo:(void *)contextInfo
                 
                 __block PFObject *message = [messagesBlock objectAtIndex:index];
                 
+                PFObject *messageOwnerID = [message objectForKey:@"user"];
+                [self sendPushNotification:messageOwnerID];
+                NSLog(@"message owner: %@",messageOwnerID);
                 MessageObject *tempMessageObject = [messages objectAtIndex:button.tag];
                 tempMessageObject.selected = true;
                 voteCounterBlock = tempMessageObject.voteCount;
@@ -649,7 +953,30 @@ error contextInfo:(void *)contextInfo
         }];
     }
 }
-
+-(void)sendPushNotification:(PFObject *)messageOwnerID {
+    //NSString *messageOwnerIDString = messageOwnerID;
+    PFQuery *messageOwner = [PFUser query];
+    [messageOwner whereKey:@"objectId" equalTo:messageOwnerID.objectId];
+    
+    PFQuery *pushQuery = [PFInstallation query];
+    [pushQuery whereKey:@"owner" matchesQuery:messageOwner];
+    
+    PFPush *push = [PFPush new];
+    [push setQuery:pushQuery];
+    NSString *pushMessage = [[self.alias stringByAppendingString:@" "] stringByAppendingString:@"liked your message"];
+    NSDictionary *data = [NSDictionary dictionaryWithObjectsAndKeys:
+                          pushMessage, @"alert",
+                          @"Increment", @"badge",
+                          @"cheering.caf", @"sound",
+                          nil];
+    [push setData:data];
+    //[PFPush sendPushDataToQueryInBackground:pushQuery withData:data];
+    [push sendPushInBackground];
+}
+-(void)imageButtonPressed:(UIButton *)button
+{
+    
+}
 
 - (void)didReceiveMemoryWarning
 {
@@ -713,7 +1040,6 @@ error contextInfo:(void *)contextInfo
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *simpleTableIdentifier = @"SimpleTableItem";
-    
     ChatTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
     if (cell == nil) {
         
@@ -767,7 +1093,48 @@ error contextInfo:(void *)contextInfo
         if (tempMessageObject.selected) {
             [cell.upVoteButton setSelected:YES];
         }
-        cell.textLabel.attributedText = tempMessageObject.message;
+        
+        if ([tempMessageObject.type isEqualToString:@"text"])
+        {
+            cell.textLabel.attributedText = tempMessageObject.message;
+            
+        } else if ([tempMessageObject.type isEqualToString:@"image"]) {
+            UIImage *thumbnail = tempMessageObject.image;
+            UIButton *thumbnailButton = [UIButton buttonWithType:UIButtonTypeCustom];
+            thumbnailButton.backgroundColor = [UIColor blackColor];
+            [thumbnailButton setImage:thumbnail forState:UIControlStateNormal];
+            thumbnailButton.showsTouchWhenHighlighted = YES;
+            [thumbnailButton addTarget:self action:@selector(imageButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+            thumbnailButton.tag = imageButtonCounter;
+            imageButtonCounter++;
+            thumbnailButton.frame = CGRectMake(65, 10, 120, 120);
+            thumbnailButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
+            cell.textLabel.text = @"";
+            [cell addSubview:thumbnailButton];
+        } else if ([tempMessageObject.type isEqualToString:@"video"]) {
+            
+            NSString *urlString = [[NSString alloc] initWithData:tempMessageObject.data encoding:NSUTF8StringEncoding];
+            NSURL *videoURL;
+            if (urlString) {
+                videoURL = [[NSURL alloc] initWithString:urlString];
+            } else {
+                // handle failure
+            }
+            
+            AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:videoURL options:nil];
+            AVAssetImageGenerator *generate = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+            generate.appliesPreferredTrackTransform = YES;
+            NSError *err = NULL;
+            CMTime time = CMTimeMake(1, 60);
+            CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
+            
+            UIImage *videoImage = [[UIImage alloc] initWithCGImage:imgRef];
+            UIImageView *videoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(65, 10, 120, 120)];
+            videoImageView.image = videoImage;
+            cell.textLabel.text = @"";
+            videoImageView.backgroundColor = [UIColor blackColor];
+            [cell addSubview:videoImageView];
+        }
         //[messages addObject:object];
         //cell.textLabel.attributedText = [messages objectAtIndex:indexPath.row];
         
@@ -785,7 +1152,9 @@ error contextInfo:(void *)contextInfo
 
 -(float)height :(NSMutableAttributedString*)string
 {
-    
+    if (string == nil) {
+        return 130;
+    }
     NSAttributedString *attributedText = string;
     CGRect rect = [attributedText boundingRectWithSize:(CGSize){301, MAXFLOAT}
                                                options:NSStringDrawingUsesLineFragmentOrigin
@@ -835,6 +1204,53 @@ error contextInfo:(void *)contextInfo
     //[self.navigationController pushViewController:detailViewController animated:YES];
 }
 
+#pragma mark - register for push notifications
+
+-(void)registerUserForPushNotification
+{
+    //PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    //[currentInstallation setDeviceTokenFromData:deviceToken];
+    
+    //currentInstallation.channels = @[@"global"];
+    //[currentInstallation saveInBackground];
+    PFUser *user = [PFUser currentUser];
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    
+    NSData *deviceToken = [[NSUserDefaults standardUserDefaults] objectForKey:@"deviceID"];
+    [currentInstallation setDeviceTokenFromData:deviceToken];
+
+    [currentInstallation setObject:user forKey:@"owner"];
+    //[[PFUser currentUser] setObject:CurrentUserFacebookId forKey:@"fbId"];
+    [currentInstallation saveInBackground];
+}
+// Create our Installation query
+//PFQuery *pushQuery = [PFInstallation query];
+//[pushQuery whereKey:@"deviceType" equalTo:@"ios"];
+//
+//// Send push notification to query
+//[PFPush sendPushMessageToQueryInBackground:pushQuery
+//                               withMessage:@"Hello World!"];
 
 
+//Parse.Cloud.afterSave("Comment", function(request) {
+//    // Our "Comment" class has a "text" key with the body of the comment itself
+//    var commentText = request.object.get('text');
+//    
+//    var pushQuery = new Parse.Query(Parse.Installation);
+//    pushQuery.equalTo('deviceType', 'ios');
+//    
+//    Parse.Push.send({
+//    where: pushQuery, // Set our Installation query
+//    data: {
+//    alert: "New comment: " + commentText
+//    }
+//    }, {
+//    success: function() {
+//        // Push was successful
+//    },
+//    error: function(error) {
+//        throw "Got an error " + error.code + " : " + error.message;
+//    }
+//    });
+//});
 @end

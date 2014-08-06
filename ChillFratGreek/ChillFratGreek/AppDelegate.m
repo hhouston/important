@@ -87,6 +87,13 @@
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
     [GMSServices provideAPIKey:@"AIzaSyAzfyaz2qzrZfOSqXutD0dYxcyGpT47Wl8"];
     
+    // Register for push notifications
+    [application registerForRemoteNotificationTypes:
+     UIRemoteNotificationTypeBadge |
+     UIRemoteNotificationTypeAlert |
+     UIRemoteNotificationTypeSound];
+    
+    
 //    if ([PFUser currentUser]) {
 //        NSLog(@"AppDelegate:logged in");
 //        ProfileObject *userData = [[ProfileObject alloc] init];
@@ -191,4 +198,60 @@
     // Returning Fetched Records
     return fetchedProfiles;
 }
+
+//- (void)application:(UIApplication *)application
+//didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)newDeviceToken {
+//    // Store the deviceToken in the current installation and save it to Parse.
+//    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+//    [currentInstallation setDeviceTokenFromData:newDeviceToken];
+//    [currentInstallation setObject:[PFUser currentUser] forKey:@"owner"];
+//    //currentInstallation.channels = @[@"global"];
+//    [currentInstallation saveInBackground];
+//}
+//Your app receives push notification.
+//- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+//{
+//    [PFPush handlePush:userInfo];
+//    
+//    UIApplicationState state = [application applicationState];
+//    
+//    // If your app is running
+//    if (state == UIApplicationStateActive)
+//    {
+//        
+//        //You need to customize your alert by yourself for this situation. For ex,
+//        NSString *cancelTitle = @"Close";
+//        NSString *showTitle = @"Get Photos";
+//        NSString *message = [[userInfo valueForKey:@"aps"] valueForKey:@"alert"];
+//        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+//                                                            message:message
+//                                                           delegate:self
+//                                                  cancelButtonTitle:cancelTitle
+//                                                  otherButtonTitles:showTitle, nil];
+//        [alertView show];
+//        
+//    }
+//    // If your app was in in active state
+//    else if (state == UIApplicationStateInactive)
+//    {
+//        
+//    }
+//}
+- (void)application:(UIApplication *)application
+didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    // Store the deviceToken in the current installation and save it to Parse.
+    //PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    //[currentInstallation setDeviceTokenFromData:deviceToken];
+    
+    //currentInstallation.channels = @[@"global"];
+    //[currentInstallation saveInBackground];
+    [[NSUserDefaults standardUserDefaults] setObject:deviceToken forKey:@"deviceID"];
+    [[NSUserDefaults standardUserDefaults]synchronize];
+}
+
+- (void)application:(UIApplication *)application
+didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    [PFPush handlePush:userInfo];
+}
+
 @end

@@ -89,10 +89,8 @@
                     self.chapterID = object[@"chapterID"];
                     
                     [self saveProfile];
-                    
-                    hvc.chapterID = self.chapterID;
-                    hvc.alias = alias;
-                    NSLog(@"alias:%@\nchapterID:%@",alias,self.chapterID);
+                
+
                 //}];
 
 
@@ -105,12 +103,13 @@
 
             
 
+            hvc = [[HomeViewController alloc] init];
 
             
             AppDelegate *ad = (AppDelegate *)[[UIApplication sharedApplication] delegate];
             ad.window.rootViewController = [[UIViewController alloc] init];
             
-            NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:[[HomeViewController alloc] init]];
+            NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:hvc];
             MenuViewController *menuController = [[MenuViewController alloc] initWithStyle:UITableViewStylePlain];
             //    // Create frosted view controller
             //    //
@@ -120,6 +119,10 @@
             frostedViewController.liveBlur = YES;
             frostedViewController.delegate = ad.self;
             //
+            NSLog(@"PASS TO HVC\nalias:%@\nchapterID:%@",alias,self.chapterID);
+
+            hvc.chapterID = self.chapterID;
+            hvc.alias = alias;
             //    // Make it a root controller
             //    //
             ad.self.window.rootViewController = frostedViewController;
