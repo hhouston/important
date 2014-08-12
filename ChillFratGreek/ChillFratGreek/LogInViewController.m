@@ -55,24 +55,24 @@
             
 
             alias = [[NSString alloc]init];
-            self.fetchedProfilesArray = [[NSArray alloc] init];
+            //self.fetchedProfilesArray = [[NSArray alloc] init];
             
-            AppDelegate* appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-            self.fetchedProfilesArray = [appDelegate getProfiles];
+            //AppDelegate* appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+            //self.fetchedProfilesArray = [appDelegate getProfiles];
             
-            NSManagedObject *profile = nil;
-            NSUInteger count = [self.fetchedProfilesArray count];
-            NSLog(@"count: %lu",(unsigned long)count);
+            //NSManagedObject *profile = nil;
+            //NSUInteger count = [self.fetchedProfilesArray count];
+            //NSLog(@"count: %lu",(unsigned long)count);
             
-            if (count == 1) {
-                
-                profile = self.fetchedProfilesArray[count-1];
-                alias = [profile valueForKey:@"alias"];
-                self.chapterID = [profile valueForKey:@"chapterID"];
-                NSLog(@"1 profile in Core Data, alias:%@-----%@",alias,self.chapterID);
-                hvc.alias = alias;
-                hvc.chapterID = self.chapterID;
-            } else if (count == 0) {
+//            if (count == 1) {
+//                
+//                profile = self.fetchedProfilesArray[count-1];
+//                alias = [profile valueForKey:@"alias"];
+//                self.chapterID = [profile valueForKey:@"chapterID"];
+//                NSLog(@"1 profile in Core Data, alias:%@-----%@",alias,self.chapterID);
+//                hvc.alias = alias;
+//                hvc.chapterID = self.chapterID;
+//            } else if (count == 0) {
                 NSString *userID = [PFUser currentUser].objectId;
                 //NSLog(@"USERID:%@",userID);
                 NSLog(@"No profile in Core Data...loading from Parse with userID:%@",userID);
@@ -94,10 +94,10 @@
                 //}];
 
 
-            } else {
-                NSLog(@"ERROR: more than one profile in Core Data");
-
-            }
+//            } else {
+//                NSLog(@"ERROR: more than one profile in Core Data");
+//
+//            }
             //NSLog(@"alias: %@\nchapterID:%@", alias, self.chapterID);
             
 

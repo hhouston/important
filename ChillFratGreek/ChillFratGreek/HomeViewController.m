@@ -57,7 +57,7 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
     NSMutableArray *messageArray;
     CGRect tableViewFrame;
     UIView *chatBackgroundView;
-    UIButton *button;
+    UIButton *sendButton;
     UIView *navBar;
     BOOL viewLoaded;
     
@@ -83,7 +83,8 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
     BOOL videoSent;
     
     int imageButtonCounter;
-    
+    UIButton *cameraButton;
+    UIButton *pictureButton;
 }
 
 @property (nonatomic,strong)NSArray* fetchedProfilesArray;
@@ -326,31 +327,21 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
     textField.delegate = self;
     [self.messageTextView addSubview:textField];
     
-    UIButton *cameraButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    cameraButton = [[UIButton alloc] initWithFrame:CGRectMake(11,4, 32, 32)];
-    UIImage *btnImage = [UIImage imageNamed:@"camerax"];
-    [cameraButton setImage:btnImage forState:UIControlStateNormal];
-    //[textButton setBackgroundImage:[UIImage imageNamed:@"phone_icon20x.png"] forState:UIControlStateNormal];
-    //cameraButton.backgroundColor = [UIColor whiteColor];
-    [cameraButton addTarget:self action:@selector(cameraButtonPressed) forControlEvents:UIControlEventTouchUpInside];
-    
-    [self.messageTextView addSubview:cameraButton];
-    
-    
-    button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [button addTarget:self
+    sendButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [sendButton addTarget:self
                action:@selector(sendButtonPressed)
      forControlEvents:UIControlEventTouchDown];
-    [button setTitle:@"Send" forState:UIControlStateNormal];
-    button.titleLabel.font = [UIFont systemFontOfSize:18.0];
+    [sendButton setTitle:@"Send" forState:UIControlStateNormal];
+    sendButton.titleLabel.font = [UIFont systemFontOfSize:18.0];
     
     //button.titleLabel.textColor = [UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1];
-    [button setTitleColor:[UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1] forState:UIControlStateNormal];
+    [sendButton setTitleColor:[UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1] forState:UIControlStateNormal];
     
     
-    button.frame = CGRectMake(262.0, 4.0, 50.0, 32.0);
-    [self.messageTextView addSubview:button];
+    sendButton.frame = CGRectMake(262.0, 4.0, 50.0, 32.0);
+    [self.messageTextView addSubview:sendButton];
     
+    [self setupCameraButton];
     
     //    UIButton *sendButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     //    sendButton = [[UIButton alloc] initWithFrame:CGRectMake(262, 4, 50, 32)];
@@ -366,15 +357,59 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
     //    [self.messageTextView addSubview:sendButton];
 }
 
+#pragma setup camera button
+-(void)setupCameraButton {
+    [pictureButton removeFromSuperview];
+    
+cameraButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+cameraButton = [[UIButton alloc] initWithFrame:CGRectMake(11,4, 32, 32)];
+UIImage *btnImage = [UIImage imageNamed:@"camerax"];
+[cameraButton setImage:btnImage forState:UIControlStateNormal];
+//[textButton setBackgroundImage:[UIImage imageNamed:@"phone_icon20x.png"] forState:UIControlStateNormal];
+//cameraButton.backgroundColor = [UIColor whiteColor];
+[cameraButton addTarget:self action:@selector(cameraButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+
+[self.messageTextView addSubview:cameraButton];
+
+}
+
+- (void)setupPictureButton {
+    
+    [cameraButton removeFromSuperview];
+    
+    pictureButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    pictureButton = [[UIButton alloc] initWithFrame:CGRectMake(11,4, 32, 32)];
+    UIImage *btnImage = [UIImage imageNamed:@"photo"];
+    [pictureButton setImage:btnImage forState:UIControlStateNormal];
+    //[textButton setBackgroundImage:[UIImage imageNamed:@"phone_icon20x.png"] forState:UIControlStateNormal];
+    //cameraButton.backgroundColor = [UIColor whiteColor];
+    [pictureButton addTarget:self action:@selector(cameraButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.messageTextView addSubview:pictureButton];
+    
+    
+    [sendButton setTitleColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0] forState:UIControlStateNormal];
+    [sendButton setEnabled:YES];
+    
+}
+
+- (void)cameraButtonPressed {
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Take a picture", @"Choose existing", nil];
+    [actionSheet showInView:[UIApplication sharedApplication].keyWindow];
+    //[actionSheet showInView:self.view];
+}
+
 - (void)sendButtonPressed {
     
+    [sendButton setTitleColor:[UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1] forState:UIControlStateNormal];
     if ([attachments count] == 1 && imageAttachment == YES) {
         imageCounter = 0;
         imageProgressFloat = 0.0;
+        [sendButton setEnabled:NO];
         [self uploadImage];
         
     } else if ([attachments count] == 1 && imageAttachment == NO) {
-        
+        [sendButton setEnabled:NO];
         [self uploadVideo];
         
     }
@@ -385,6 +420,7 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
         //[[NSRunLoop currentRunLoop] addTimer:textTimer forMode:NSDefaultRunLoopMode];
         textCounter = 0;
         textProgressFloat = 0.0;
+        [sendButton setEnabled:NO];
         [self textProgressBar];
         [self uploadText];
     }
@@ -392,12 +428,6 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
     if ([textField.text length] == 0 && [attachments count] == 0){
         [ProgressHUD showError:@"nothing to send..."];
     }
-}
-
-- (void)cameraButtonPressed {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Take picture/video", @"Choose existing", nil];
-    [actionSheet showInView:[UIApplication sharedApplication].keyWindow];
-    //[actionSheet showInView:self.view];
 }
 
 # pragma upload media to Parse db
@@ -426,15 +456,18 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
              if (error == nil)
              {
                  imageSent = YES;
-                 [JSQSystemSoundPlayer jsq_playMessageSentSound];
-                 [self getMessages];
+                 //[JSQSystemSoundPlayer jsq_playMessageSentSound];
                  textField.text = @"";
-                 [button setTitleColor:[UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1] forState:UIControlStateNormal];
-                 
+                 [sendButton setTitleColor:[UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1] forState:UIControlStateNormal];
+                 [self setupCameraButton];
+                 [self getMessages];
+
              }
              else {
                  imageSent = NO;
                  [ProgressHUD showError:@"Network error"];
+                 [self setupCameraButton];
+
              }
          }];
     }
@@ -470,7 +503,7 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
              [JSQSystemSoundPlayer jsq_playMessageSentSound];
              [self getMessages];
              textField.text = @"";
-             [button setTitleColor:[UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1] forState:UIControlStateNormal];
+             [sendButton setTitleColor:[UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1] forState:UIControlStateNormal];
              
          }
          else {
@@ -496,7 +529,7 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
              textSent = YES;
              [self getMessages];
              textField.text = @"";
-             [button setTitleColor:[UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1] forState:UIControlStateNormal];
+             [sendButton setTitleColor:[UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1] forState:UIControlStateNormal];
              
          }
          else {
@@ -515,10 +548,6 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
         textProgressFloat = textCounter/300.0;
         progressViewText.progress = textProgressFloat;
         [self performSelector:@selector(textProgressBar) withObject:nil afterDelay:0.05];
-    } else {
-        
-        [self finishTextProgressBar];
-        
     }
     
 }
@@ -551,10 +580,6 @@ static const CGFloat PORTRAIT_KEYBOARD_HEIGHT = 216;
         imageProgressFloat = imageCounter/300.0;
         progressViewImage.progress = imageProgressFloat;
         [self performSelector:@selector(imageProgressBar) withObject:nil afterDelay:0.05];
-    } else {
-        
-        [self finishImageProgressBar];
-        
     }
     
 }
@@ -666,7 +691,9 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     {
         // Media is an image
         UIImage *image = info[UIImagePickerControllerOriginalImage];
+        [self setupPictureButton];
         [attachments addObject:image];
+        
         attachmentAdded = YES;
         imageAttachment = YES;
         //save image to gallery
@@ -745,15 +772,18 @@ error contextInfo:(void *)contextInfo
 - (void)textFieldDidChange:(UITextField *)textField2 {
     
     if ([textField2.text length] != 0) {
-        [button setTitleColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0] forState:UIControlStateNormal];
+        [sendButton setEnabled:YES];
+        [sendButton setTitleColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0] forState:UIControlStateNormal];
     } else {
-        [button setTitleColor:[UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1] forState:UIControlStateNormal];
+        [sendButton setEnabled:NO];
+        [sendButton setTitleColor:[UIColor colorWithRed:102.0/255 green:102.0/255 blue:102.0/255 alpha:1] forState:UIControlStateNormal];
     }
     
 }
 
 #pragma mark - load from Parse
 -(void)getMessages {
+    
     NSMutableParagraphStyle *style =  [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     UIFont *labelFont = [UIFont fontWithName:@"AppleSDGothicNeo-Thin" size:14 ];
     
@@ -789,18 +819,23 @@ error contextInfo:(void *)contextInfo
                 upVotedArray = object[@"upVoted"];
                 
                 if (object[@"text"] != nil) {
+                    
                     NSString *message = object[@"text"];
                     NSMutableAttributedString *attributedMessage = [[NSMutableAttributedString alloc] initWithString:message attributes:@{NSParagraphStyleAttributeName: style}];
                     [attributedMessage addAttribute:NSFontAttributeName value:labelFont range:NSMakeRange(0, [attributedMessage length])];
                     messageObj.message = attributedMessage;
                     messageObj.type = @"text";
+                    
                 } else if (object[@"image"] != nil) {
+                    
                     messageObj.type = @"image";
                     PFFile *imageFile = [object objectForKey:@"image"];
                     [imageFile getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                        
                         if(!error) {
+                            
                             messageObj.image = [UIImage imageWithData:data];
-
+                            
                         }
                         
                     }];
@@ -841,6 +876,15 @@ error contextInfo:(void *)contextInfo
                     [self.chatTableView reloadData];
                     NSIndexPath *lastMessageIP = [NSIndexPath indexPathForRow:numberOfObjects-1 inSection:0];
                     [self.chatTableView scrollToRowAtIndexPath:lastMessageIP atScrollPosition:NULL animated:YES];
+                    
+                    if (imageSent == YES) {
+                        [self finishImageProgressBar];
+                        imageSent = NO;
+                    } else if (textSent == YES) {
+                        [self finishImageProgressBar];
+                        textSent = NO;
+                    }
+
                 }
                 
                 NSLog(@"upVotedArray:%lu",(unsigned long)upVotedArray.count);
@@ -963,6 +1007,7 @@ error contextInfo:(void *)contextInfo
     
     PFPush *push = [PFPush new];
     [push setQuery:pushQuery];
+    //self.alias = @"fucking work";
     NSString *pushMessage = [[self.alias stringByAppendingString:@" "] stringByAppendingString:@"liked your message"];
     NSDictionary *data = [NSDictionary dictionaryWithObjectsAndKeys:
                           pushMessage, @"alert",
@@ -1145,6 +1190,9 @@ error contextInfo:(void *)contextInfo
         cell.textLabel.textColor = [UIColor blackColor];
     } else {
         //self.view.backgroundColor = [UIColor blackColor];
+    }
+    if (indexPath == [NSIndexPath indexPathForRow:objectCounter inSection:0]) {
+        [sendButton setEnabled:YES];
     }
     return cell;
 }

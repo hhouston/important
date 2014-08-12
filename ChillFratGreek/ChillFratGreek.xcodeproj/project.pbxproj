@@ -45,6 +45,10 @@
 		391F35EB1988320C00953D69 /* RusheeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 391F35E91988320C00953D69 /* RusheeTableViewCell.xib */; };
 		391F35EF1988358200953D69 /* arrow-down7.png in Resources */ = {isa = PBXBuildFile; fileRef = 391F35EE1988358200953D69 /* arrow-down7.png */; };
 		391F35F1198835C900953D69 /* arrow-down7@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 391F35F0198835C900953D69 /* arrow-down7@2x.png */; };
+		391FABD019954738003AEA58 /* image@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 391FABCE19954738003AEA58 /* image@2x.png */; };
+		391FABD119954738003AEA58 /* image.png in Resources */ = {isa = PBXBuildFile; fileRef = 391FABCF19954738003AEA58 /* image.png */; };
+		391FABD3199548FD003AEA58 /* photo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 391FABD2199548FD003AEA58 /* photo@2x.png */; };
+		391FABD519954903003AEA58 /* photo.png in Resources */ = {isa = PBXBuildFile; fileRef = 391FABD419954903003AEA58 /* photo.png */; };
 		3920608D196D12B200838F86 /* avatar@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3920608C196D12B200838F86 /* avatar@2x.jpg */; };
 		3920608F196D12F600838F86 /* Balloon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3920608E196D12F600838F86 /* Balloon@2x.png */; };
 		39206093196D9ED600838F86 /* RusheeDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 39206091196D9ED600838F86 /* RusheeDetailViewController.m */; };
@@ -139,6 +143,8 @@
 		393970931981E53B0059C4C2 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 393970921981E53B0059C4C2 /* MessageUI.framework */; };
 		393970971981F2B30059C4C2 /* ChatTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 393970951981F2B30059C4C2 /* ChatTableViewController.m */; };
 		393970981981F2B30059C4C2 /* ChatTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 393970961981F2B30059C4C2 /* ChatTableViewController.xib */; };
+		39546D03199A7DF0002ED20D /* ChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 39546D01199A7DF0002ED20D /* ChatViewController.m */; };
+		39546D04199A7DF0002ED20D /* ChatViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 39546D02199A7DF0002ED20D /* ChatViewController.xib */; };
 		395AED29198DA136007B8075 /* camera.png in Resources */ = {isa = PBXBuildFile; fileRef = 395AED26198DA136007B8075 /* camera.png */; };
 		395AED2A198DA136007B8075 /* camera2.png in Resources */ = {isa = PBXBuildFile; fileRef = 395AED27198DA136007B8075 /* camera2.png */; };
 		395AED2B198DA136007B8075 /* camera3.png in Resources */ = {isa = PBXBuildFile; fileRef = 395AED28198DA136007B8075 /* camera3.png */; };
@@ -302,6 +308,10 @@
 		391F35E91988320C00953D69 /* RusheeTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RusheeTableViewCell.xib; sourceTree = "<group>"; };
 		391F35EE1988358200953D69 /* arrow-down7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow-down7.png"; sourceTree = "<group>"; };
 		391F35F0198835C900953D69 /* arrow-down7@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow-down7@2x.png"; sourceTree = "<group>"; };
+		391FABCE19954738003AEA58 /* image@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "image@2x.png"; sourceTree = "<group>"; };
+		391FABCF19954738003AEA58 /* image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image.png; sourceTree = "<group>"; };
+		391FABD2199548FD003AEA58 /* photo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "photo@2x.png"; sourceTree = "<group>"; };
+		391FABD419954903003AEA58 /* photo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = photo.png; sourceTree = "<group>"; };
 		3920608C196D12B200838F86 /* avatar@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "avatar@2x.jpg"; sourceTree = "<group>"; };
 		3920608E196D12F600838F86 /* Balloon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Balloon@2x.png"; sourceTree = "<group>"; };
 		39206090196D9ED600838F86 /* RusheeDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RusheeDetailViewController.h; sourceTree = "<group>"; };
@@ -452,6 +462,9 @@
 		393970941981F2B30059C4C2 /* ChatTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatTableViewController.h; sourceTree = "<group>"; };
 		393970951981F2B30059C4C2 /* ChatTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatTableViewController.m; sourceTree = "<group>"; };
 		393970961981F2B30059C4C2 /* ChatTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatTableViewController.xib; sourceTree = "<group>"; };
+		39546D00199A7DF0002ED20D /* ChatViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatViewController.h; sourceTree = "<group>"; };
+		39546D01199A7DF0002ED20D /* ChatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatViewController.m; sourceTree = "<group>"; };
+		39546D02199A7DF0002ED20D /* ChatViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatViewController.xib; sourceTree = "<group>"; };
 		395AED26198DA136007B8075 /* camera.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camera.png; sourceTree = "<group>"; };
 		395AED27198DA136007B8075 /* camera2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camera2.png; sourceTree = "<group>"; };
 		395AED28198DA136007B8075 /* camera3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camera3.png; sourceTree = "<group>"; };
@@ -973,6 +986,9 @@
 				3970BC2C1989978A0022DB40 /* MessageObject.m */,
 				39787A9D1991906C00517C0D /* VideoObject.h */,
 				39787A9E1991906C00517C0D /* VideoObject.m */,
+				39546D00199A7DF0002ED20D /* ChatViewController.h */,
+				39546D01199A7DF0002ED20D /* ChatViewController.m */,
+				39546D02199A7DF0002ED20D /* ChatViewController.xib */,
 				393970941981F2B30059C4C2 /* ChatTableViewController.h */,
 				393970951981F2B30059C4C2 /* ChatTableViewController.m */,
 				393970961981F2B30059C4C2 /* ChatTableViewController.xib */,
@@ -1045,6 +1061,13 @@
 			name = objects;
 			sourceTree = "<group>";
 		};
+		3987F4F51992DC6200DB37A8 /* iPad */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = iPad;
+			sourceTree = "<group>";
+		};
 		39912B91197C62C900AA124F /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
@@ -1057,6 +1080,10 @@
 		39C2B9B619661792000362E0 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				391FABD419954903003AEA58 /* photo.png */,
+				391FABD2199548FD003AEA58 /* photo@2x.png */,
+				391FABCE19954738003AEA58 /* image@2x.png */,
+				391FABCF19954738003AEA58 /* image.png */,
 				395AED3A198DB4B0007B8075 /* camera32x.png */,
 				395AED3B198DB4B0007B8075 /* camera32x@2x.png */,
 				395AED36198DB452007B8075 /* camera40x@2x.png */,
@@ -1199,6 +1226,7 @@
 		39C7E6731965B71C00F5F08F /* ChillFratGreek */ = {
 			isa = PBXGroup;
 			children = (
+				3987F4F51992DC6200DB37A8 /* iPad */,
 				3937A36C196AFD8700559AE9 /* Controllers */,
 				39C7E67C1965B71C00F5F08F /* AppDelegate.h */,
 				39C7E67D1965B71C00F5F08F /* AppDelegate.m */,
@@ -1206,12 +1234,12 @@
 				396EDF671980A9C500BE8DFD /* RearMasterTableViewController.m */,
 				396EDF691980B59700BE8DFD /* RightTableViewController.h */,
 				396EDF6A1980B59700BE8DFD /* RightTableViewController.m */,
+				3921C9681979DE2A007C5E0E /* STTwitter */,
 				396EDF621980A8FE00BE8DFD /* SWRevealViewController */,
 				39DB04F419723EDD00E80D5B /* ProfileModel.xcdatamodeld */,
 				39C7E67F1965B71C00F5F08F /* Main.storyboard */,
 				39844118197F3FDE00657050 /* objects */,
 				39912B91197C62C900AA124F /* Utilities */,
-				3921C9681979DE2A007C5E0E /* STTwitter */,
 				3921C8D51979D299007C5E0E /* Vendor */,
 				3937A356196AFC6200559AE9 /* REFrostedViewController */,
 				39C7E6851965B71C00F5F08F /* Images.xcassets */,
@@ -1332,11 +1360,13 @@
 			files = (
 				39C7C1AB19804EB00021A104 /* menu.png in Resources */,
 				395AED34198DB401007B8075 /* camerax.png in Resources */,
+				391FABD519954903003AEA58 /* photo.png in Resources */,
 				3976D2091986F2D800FC9067 /* arrow-up3.png in Resources */,
 				391F35E5198817CC00953D69 /* arrow-up-purple20x@2x.png in Resources */,
 				3921C93D1979D29A007C5E0E /* bubble_stroked_tailless@2x.png in Resources */,
 				39C7C1B219804EB00021A104 /* menu@2x.png in Resources */,
 				3920D64319801ECD006DB6CA /* phone_grey.png in Resources */,
+				39546D04199A7DF0002ED20D /* ChatViewController.xib in Resources */,
 				3920D64119801D4B006DB6CA /* purple_phone.png in Resources */,
 				3976D2031986F2D800FC9067 /* arrow-down.png in Resources */,
 				391F35EF1988358200953D69 /* arrow-down7.png in Resources */,
@@ -1356,6 +1386,7 @@
 				3921C9441979D29A007C5E0E /* message_received.aiff in Resources */,
 				391F35E6198817CC00953D69 /* arrow-up-purple20x.png in Resources */,
 				3976D2061986F2D800FC9067 /* arrow-down4.png in Resources */,
+				391FABD3199548FD003AEA58 /* photo@2x.png in Resources */,
 				3921C9421979D29A007C5E0E /* typing.png in Resources */,
 				395AED2F198DA141007B8075 /* camera@2x.png in Resources */,
 				3920608F196D12F600838F86 /* Balloon@2x.png in Resources */,
@@ -1376,6 +1407,7 @@
 				39C2B9B519661789000362E0 /* reveal-icon@2x.png in Resources */,
 				39606BAA1982BC9900109BDC /* ChatTableViewCell.xib in Resources */,
 				39F8290719745D6400CEC72E /* blue radar 90x.png in Resources */,
+				391FABD019954738003AEA58 /* image@2x.png in Resources */,
 				3921C9621979D29A007C5E0E /* JSQMessagesToolbarContentView.xib in Resources */,
 				39096CD019895C0E00A4A8E0 /* warning2-red20x@2x.png in Resources */,
 				397BCE9D198950C6009E56C4 /* arrow-down-20x.png in Resources */,
@@ -1456,6 +1488,7 @@
 				391F35D419880D8B00953D69 /* arrow-up3@2x.png in Resources */,
 				3921C93E1979D29A007C5E0E /* bubble_tailless.png in Resources */,
 				39F829111974672D00CEC72E /* blue radar one circle 90x.png in Resources */,
+				391FABD119954738003AEA58 /* image.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1500,6 +1533,7 @@
 				3921C95F1979D29A007C5E0E /* JSQMessagesLoadEarlierHeaderView.m in Sources */,
 				3921C98C1979DE2A007C5E0E /* STTwitterHTML.m in Sources */,
 				39C7E6841965B71C00F5F08F /* HomeViewController.m in Sources */,
+				39546D03199A7DF0002ED20D /* ChatViewController.m in Sources */,
 				3921C98F1979DE2A007C5E0E /* STTwitterOSRequest.m in Sources */,
 				396EDF7B1980E48B00BE8DFD /* SlideNavigationContorllerAnimatorFade.m in Sources */,
 				396EDF6B1980B59700BE8DFD /* RightTableViewController.m in Sources */,
@@ -1699,8 +1733,8 @@
 					"$(PROJECT_DIR)/GoogleMaps.framework/GoogleMaps",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "E1B2B483-31D0-4097-9A1E-01A1604A87C4";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				PROVISIONING_PROFILE = "1F9B23F0-9C01-419B-8120-DA75A0BD1B09";
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1726,8 +1760,8 @@
 					"$(PROJECT_DIR)/GoogleMaps.framework/GoogleMaps",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "E1B2B483-31D0-4097-9A1E-01A1604A87C4";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				PROVISIONING_PROFILE = "97770F20-21B2-445C-81A1-13CED2F13F7F";
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

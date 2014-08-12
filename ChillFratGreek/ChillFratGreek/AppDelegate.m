@@ -209,25 +209,27 @@
 //    [currentInstallation saveInBackground];
 //}
 //Your app receives push notification.
+
 //- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 //{
-//    [PFPush handlePush:userInfo];
+//    //[PFPush handlePush:userInfo];
 //    
 //    UIApplicationState state = [application applicationState];
 //    
 //    // If your app is running
 //    if (state == UIApplicationStateActive)
 //    {
-//        
+//        NSLog(@"user info%@",userInfo);
+//
 //        //You need to customize your alert by yourself for this situation. For ex,
 //        NSString *cancelTitle = @"Close";
-//        NSString *showTitle = @"Get Photos";
+//        //NSString *showTitle = @"Get Photos";
 //        NSString *message = [[userInfo valueForKey:@"aps"] valueForKey:@"alert"];
 //        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 //                                                            message:message
 //                                                           delegate:self
 //                                                  cancelButtonTitle:cancelTitle
-//                                                  otherButtonTitles:showTitle, nil];
+//                                                  otherButtonTitles:nil];
 //        [alertView show];
 //        
 //    }
@@ -237,6 +239,7 @@
 //        
 //    }
 //}
+
 - (void)application:(UIApplication *)application
 didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     // Store the deviceToken in the current installation and save it to Parse.
@@ -251,6 +254,8 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 
 - (void)application:(UIApplication *)application
 didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    NSLog(@"user info%@",userInfo);
+
     [PFPush handlePush:userInfo];
 }
 

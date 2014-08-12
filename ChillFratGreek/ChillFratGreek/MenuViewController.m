@@ -18,6 +18,7 @@
 #import "AppDelegate.h"
 #import "utilities.h"
 #import "LogInViewController.h"
+#import "ChatViewController.h"
 
 @interface MenuViewController ()
 @property (nonatomic,strong)NSArray* fetchedProfilesArray;
@@ -28,9 +29,7 @@
 @implementation MenuViewController {
     PFImageView *imageView;
     NSString *aliasString;
-    RusheesTableViewController *rtvc;
     PledgesMapViewController *pmvc;
-    HomeViewController *hvc;
     WhiteboardViewController *wvc;
     ProfileObject *profileObject;
     UIButton *profileButton;
@@ -39,9 +38,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    rtvc = [[RusheesTableViewController alloc] init];
-    hvc = [[HomeViewController alloc] init];
-    
+
     //self.alias = hvc.alias;
     AppDelegate* appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
 
@@ -173,25 +170,25 @@
         self.frostedViewController.contentViewController = navigationController;
     } else if (indexPath.section == 0 && indexPath.row == 1){
         
-        rtvc.chapterID = self.chapterID;
         //[rtvc setChapterID2:self.chapterID];
         
-        //RusheesTableViewController *secondViewController = [[RusheesTableViewController alloc] init];
-        NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:rtvc];
+        RusheesTableViewController *rusheesTableViewController = [[RusheesTableViewController alloc] init];
+        rusheesTableViewController.chapterID = self.chapterID;
+        NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:rusheesTableViewController];
         self.frostedViewController.contentViewController = navigationController;
     } else if (indexPath.section == 0 && indexPath.row == 2) {
-        
-        pmvc = [[PledgesMapViewController alloc] init];
+        PledgesMapViewController *pmvc = [[PledgesMapViewController alloc] init];
         pmvc.chapterID = self.chapterID;
         NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:pmvc];
 
         self.frostedViewController.contentViewController = navigationController;
         
     } else if (indexPath.section == 0 && indexPath.row == 3) {
-        wvc = [[WhiteboardViewController alloc] init];
-        wvc.chapterID = self.chapterID;
-        NavigationController *navigationController = [[NavigationController alloc ] initWithRootViewController:wvc];
-        
+//        WhiteboardViewController *wvc = [[WhiteboardViewController alloc] init];
+//        wvc.chapterID = self.chapterID;
+//        NavigationController *navigationController = [[NavigationController alloc ] initWithRootViewController:wvc];
+        ChatViewController *cvc = [[ChatViewController alloc] init];
+        NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:cvc];
         self.frostedViewController.contentViewController = navigationController;
     } else if (indexPath.section == 0 && indexPath.row == 5) {
         [PFUser logOut];
