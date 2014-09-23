@@ -13,9 +13,9 @@
 #import "MenuViewController.h"
 #import "AppDelegate.h"
 #import "ProfileObject.h"
+#import "LogUserInViewController.h"
 
 @interface SignUpViewController ()
-@property (nonatomic, retain) NSManagedObjectContext *managedObjectContext;
 
 @end
 
@@ -54,102 +54,18 @@
         if (!error) {
             NSLog(@"register successful");
             
-            [self saveProfile];
-            
-            HomeViewController *hvc = [[HomeViewController alloc] init];
+            LogUserInViewController *logUserInViewController = [[LogUserInViewController alloc] initWithNibName:@"LogUserInViewController" bundle:nil];
             AppDelegate *ad = (AppDelegate *)[[UIApplication sharedApplication] delegate];
             ad.window.rootViewController = [[UIViewController alloc] init];
-            
-            NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:hvc];
-            MenuViewController *menuController = [[MenuViewController alloc] initWithStyle:UITableViewStylePlain];
-            //    // Create frosted view controller
-            //    //
-            REFrostedViewController *frostedViewController = [[REFrostedViewController alloc] initWithContentViewController:navigationController menuViewController:menuController];
-            frostedViewController.direction = REFrostedViewControllerDirectionLeft;
-            frostedViewController.liveBlurBackgroundStyle = REFrostedViewControllerLiveBackgroundStyleLight;
-            frostedViewController.liveBlur = YES;
-            frostedViewController.delegate = ad.self;
-            
-            hvc.chapterID = self.chapterID;
-            hvc.alias = self.alias;
-            
-            //    // Make it a root controller
-            //    //
-            ad.self.window.rootViewController = frostedViewController;
-            ad.self.window.backgroundColor = [UIColor whiteColor];
-            [ad.self.window makeKeyAndVisible];
+            ad.window.rootViewController = logUserInViewController;
 
-            //HomeViewController *hvc = [[HomeViewController alloc] init];
-            //[self.navigationController pushViewController:hvc animated:YES];
+            
         } else {
             NSLog(@"could not register");
         }
         
     }];
     
-}
-
-
-
-- (void)saveProfile {
-    NSLog(@"save profile called: %@", self.alias);
-    AppDelegate* appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    
-    self.managedObjectContext = appDelegate.managedObjectContext;
-    ProfileObject* profileEntry = [NSEntityDescription insertNewObjectForEntityForName:@"Profile"
-                                                                inManagedObjectContext:self.managedObjectContext];
-
-
-
-    //NSManagedObjectContext *context = [appDelegate managedObjectContext];
-    //NSManagedObject *profile;
-    //profile = [NSEntityDescription insertNewObjectForEntityForName:@"Profile" inManagedObjectContext:context];
-    [profileEntry setValue:self.alias forKey:@"alias"];
-    [profileEntry setValue:self.chapterID forKey:@"chapterID"];
-    NSError *error;
-    [self.managedObjectContext save:&error];
-    NSLog(@"profileEntry:%@",profileEntry);
-    if (![self.managedObjectContext save:&error]) {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-    }
-}
-
-- (void)saveAvatar:(UIImage *)avatar {
-    //NSLog(@"save profile called: %@", alias);
-    AppDelegate* appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    self.managedObjectContext = appDelegate.managedObjectContext;
-    ProfileObject* profileEntry = [NSEntityDescription insertNewObjectForEntityForName:@"Profile"
-                                                                inManagedObjectContext:self.managedObjectContext];
-
-
-
-    NSManagedObjectContext *context = [appDelegate managedObjectContext];
-    NSManagedObject *profile;
-    profile = [NSEntityDescription insertNewObjectForEntityForName:@"Profile" inManagedObjectContext:context];
-
-    NSData *imageData = UIImagePNGRepresentation(avatar);
-    [profile setValue:imageData forKey:@"avatar"];
-    NSError *error;
-
-    @try{
-
-        if (_managedObjectContext != nil) {
-
-            if (![_managedObjectContext save:&error]) {
-
-                NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-
-                NSString * infoString = [NSString stringWithFormat:@"Please check your connection and try again."];
-
-                UIAlertView * infoAlert = [[UIAlertView alloc] initWithTitle:@"Database Connection Error" message:infoString delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-
-                NSLog(@"alert: %@",infoAlert);
-            }
-        }
-    }@catch (NSException *exception) {
-
-        NSLog(@"inside exception");
-    }
 }
 
 

@@ -19,6 +19,7 @@
 #import "utilities.h"
 #import "LogInViewController.h"
 #import "ChatViewController.h"
+#import "TweetViewController.h"
 
 @interface MenuViewController ()
 @property (nonatomic,strong)NSArray* fetchedProfilesArray;
@@ -38,19 +39,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    self.alias = [defaults objectForKey:@"alias"];
+    self.chapterID = [defaults objectForKey:@"chapterID"];
 
-    //self.alias = hvc.alias;
-    AppDelegate* appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-
-    self.fetchedProfilesArray = [appDelegate getProfiles];
-
-    NSManagedObject *profile = nil;
-    NSUInteger count = [self.fetchedProfilesArray count];
-    NSLog(@"PROFILE COUNTER SHOULD BE ONLY 1: #%lu",(unsigned long)count);
-    profile = self.fetchedProfilesArray[count-1];
-    self.alias = [profile valueForKey:@"alias"];
-    self.chapterID = [profile valueForKey:@"chapterID"];
-    
     NSLog(@"MVC ALIAS:%@",self.alias);
     
     
@@ -164,10 +156,12 @@
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == 0 && indexPath.row == 0) {
+        
         HomeViewController *homeViewController = [[HomeViewController alloc] init];
         homeViewController.chapterID = self.chapterID;
         NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:homeViewController];
         self.frostedViewController.contentViewController = navigationController;
+        
     } else if (indexPath.section == 0 && indexPath.row == 1){
         
         //[rtvc setChapterID2:self.chapterID];
@@ -187,9 +181,17 @@
 //        WhiteboardViewController *wvc = [[WhiteboardViewController alloc] init];
 //        wvc.chapterID = self.chapterID;
 //        NavigationController *navigationController = [[NavigationController alloc ] initWithRootViewController:wvc];
+        //ChatViewController *cvc = [[ChatViewController alloc] init];
+        TweetViewController *tvc = [[TweetViewController alloc] init];
+        NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:tvc];
+        self.frostedViewController.contentViewController = navigationController;
+        
+    } else if (indexPath.section == 0 && indexPath.row == 4) {
+        
         ChatViewController *cvc = [[ChatViewController alloc] init];
         NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:cvc];
         self.frostedViewController.contentViewController = navigationController;
+        
     } else if (indexPath.section == 0 && indexPath.row == 5) {
         [PFUser logOut];
         LogInViewController *lvc = [[LogInViewController alloc] init];
@@ -235,7 +237,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
     
-        NSArray *titles = @[@"Home", @"Rush List", @"find a pledge",@"whiteboard", @"Party", @"Log Out"];
+        NSArray *titles = @[@"Home", @"Rush List", @"find a pledge",@"twitter", @"new chat", @"Log Out"];
         cell.textLabel.text = titles[indexPath.row];
 
     

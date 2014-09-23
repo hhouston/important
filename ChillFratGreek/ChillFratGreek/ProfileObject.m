@@ -11,12 +11,12 @@
 
 @implementation ProfileObject
 
-@dynamic chapterID;
-@dynamic collegeID;
-@dynamic fraternityName;
-@dynamic schoolName;
-@dynamic userAlias;
-@dynamic avatar;
+//@dynamic chapterID;
+//@dynamic collegeID;
+//@dynamic fraternityName;
+//@dynamic schoolName;
+//@dynamic userAlias;
+//@dynamic avatar;
 //- (id)init
 //{
 //    self = [super init];

@@ -142,9 +142,10 @@
 		3938D39C196F9EF300D10643 /* radar1.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 3938D39B196F9EF300D10643 /* radar1.pdf */; };
 		393970931981E53B0059C4C2 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 393970921981E53B0059C4C2 /* MessageUI.framework */; };
 		393970971981F2B30059C4C2 /* ChatTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 393970951981F2B30059C4C2 /* ChatTableViewController.m */; };
-		393970981981F2B30059C4C2 /* ChatTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 393970961981F2B30059C4C2 /* ChatTableViewController.xib */; };
 		39546D03199A7DF0002ED20D /* ChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 39546D01199A7DF0002ED20D /* ChatViewController.m */; };
 		39546D04199A7DF0002ED20D /* ChatViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 39546D02199A7DF0002ED20D /* ChatViewController.xib */; };
+		39546D08199A8833002ED20D /* LogUserInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 39546D06199A8833002ED20D /* LogUserInViewController.m */; };
+		39546D09199A8833002ED20D /* LogUserInViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 39546D07199A8833002ED20D /* LogUserInViewController.xib */; };
 		395AED29198DA136007B8075 /* camera.png in Resources */ = {isa = PBXBuildFile; fileRef = 395AED26198DA136007B8075 /* camera.png */; };
 		395AED2A198DA136007B8075 /* camera2.png in Resources */ = {isa = PBXBuildFile; fileRef = 395AED27198DA136007B8075 /* camera2.png */; };
 		395AED2B198DA136007B8075 /* camera3.png in Resources */ = {isa = PBXBuildFile; fileRef = 395AED28198DA136007B8075 /* camera3.png */; };
@@ -240,7 +241,6 @@
 		39D1A24B197887A100173E6F /* PollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 39D1A24A197887A100173E6F /* PollViewController.m */; };
 		39DB04F3197204F300E80D5B /* ProfileObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 39DB04F2197204F300E80D5B /* ProfileObject.m */; };
 		39DB04F619723EDD00E80D5B /* ProfileModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 39DB04F419723EDD00E80D5B /* ProfileModel.xcdatamodeld */; };
-		39DB04FB1972654400E80D5B /* CheckLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 39DB04FA1972654400E80D5B /* CheckLoginViewController.m */; };
 		39E042BC196F15C500EE3A87 /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 39E042BB196F15C500EE3A87 /* GoogleMaps.framework */; };
 		39E042BE196F15E000EE3A87 /* GoogleMaps.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 39E042BD196F15E000EE3A87 /* GoogleMaps.bundle */; };
 		39E042BF196F17F300EE3A87 /* GoogleMaps.bundle in Sources */ = {isa = PBXBuildFile; fileRef = 39E042BD196F15E000EE3A87 /* GoogleMaps.bundle */; };
@@ -461,10 +461,12 @@
 		393970921981E53B0059C4C2 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		393970941981F2B30059C4C2 /* ChatTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatTableViewController.h; sourceTree = "<group>"; };
 		393970951981F2B30059C4C2 /* ChatTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatTableViewController.m; sourceTree = "<group>"; };
-		393970961981F2B30059C4C2 /* ChatTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatTableViewController.xib; sourceTree = "<group>"; };
 		39546D00199A7DF0002ED20D /* ChatViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatViewController.h; sourceTree = "<group>"; };
 		39546D01199A7DF0002ED20D /* ChatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatViewController.m; sourceTree = "<group>"; };
 		39546D02199A7DF0002ED20D /* ChatViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatViewController.xib; sourceTree = "<group>"; };
+		39546D05199A8833002ED20D /* LogUserInViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogUserInViewController.h; sourceTree = "<group>"; };
+		39546D06199A8833002ED20D /* LogUserInViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogUserInViewController.m; sourceTree = "<group>"; };
+		39546D07199A8833002ED20D /* LogUserInViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LogUserInViewController.xib; sourceTree = "<group>"; };
 		395AED26198DA136007B8075 /* camera.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camera.png; sourceTree = "<group>"; };
 		395AED27198DA136007B8075 /* camera2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camera2.png; sourceTree = "<group>"; };
 		395AED28198DA136007B8075 /* camera3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camera3.png; sourceTree = "<group>"; };
@@ -588,8 +590,6 @@
 		39DB04F1197204F300E80D5B /* ProfileObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileObject.h; sourceTree = "<group>"; };
 		39DB04F2197204F300E80D5B /* ProfileObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileObject.m; sourceTree = "<group>"; };
 		39DB04F519723EDD00E80D5B /* ProfileModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProfileModel.xcdatamodel; sourceTree = "<group>"; };
-		39DB04F91972654400E80D5B /* CheckLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CheckLoginViewController.h; sourceTree = "<group>"; };
-		39DB04FA1972654400E80D5B /* CheckLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CheckLoginViewController.m; sourceTree = "<group>"; };
 		39E042BB196F15C500EE3A87 /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMaps.framework; sourceTree = "<group>"; };
 		39E042BD196F15E000EE3A87 /* GoogleMaps.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GoogleMaps.bundle; path = GoogleMaps.framework/Versions/A/Resources/GoogleMaps.bundle; sourceTree = "<group>"; };
 		39E042C1196F19C400EE3A87 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
@@ -964,8 +964,9 @@
 				39C7E6C11965C28800F5F08F /* LogInViewController.m */,
 				39C7E6C31965C42100F5F08F /* SignUpViewController.h */,
 				39C7E6C41965C42100F5F08F /* SignUpViewController.m */,
-				39DB04F91972654400E80D5B /* CheckLoginViewController.h */,
-				39DB04FA1972654400E80D5B /* CheckLoginViewController.m */,
+				39546D05199A8833002ED20D /* LogUserInViewController.h */,
+				39546D06199A8833002ED20D /* LogUserInViewController.m */,
+				39546D07199A8833002ED20D /* LogUserInViewController.xib */,
 			);
 			name = LoginVCs;
 			sourceTree = "<group>";
@@ -991,7 +992,6 @@
 				39546D02199A7DF0002ED20D /* ChatViewController.xib */,
 				393970941981F2B30059C4C2 /* ChatTableViewController.h */,
 				393970951981F2B30059C4C2 /* ChatTableViewController.m */,
-				393970961981F2B30059C4C2 /* ChatTableViewController.xib */,
 				39606BA61982BC9900109BDC /* ChatTableViewCell.h */,
 				39606BA71982BC9900109BDC /* ChatTableViewCell.m */,
 				39606BA81982BC9900109BDC /* ChatTableViewCell.xib */,
@@ -1401,6 +1401,7 @@
 				39F8290F1974655A00CEC72E /* blue_radar_90x.png in Resources */,
 				391F35E21988133E00953D69 /* arrow-up-20x@2x.png in Resources */,
 				39C7C1B119804EB00021A104 /* cogs@2x.png in Resources */,
+				39546D09199A8833002ED20D /* LogUserInViewController.xib in Resources */,
 				391F35C319880CBA00953D69 /* arrow-up4.png in Resources */,
 				39C7C1AE19804EB00021A104 /* bubble_full@2x.png in Resources */,
 				39C7C1B419804EB00021A104 /* spinner@2x.png in Resources */,
@@ -1450,7 +1451,6 @@
 				39096CC91989544B00A4A8E0 /* bubble2_open_light@2x.png in Resources */,
 				3921C9371979D29A007C5E0E /* bubble_min@2x.png in Resources */,
 				391F35D919880D8B00953D69 /* arrow-up8@2x.png in Resources */,
-				393970981981F2B30059C4C2 /* ChatTableViewController.xib in Resources */,
 				391F35D819880D8B00953D69 /* arrow-up7@2x.png in Resources */,
 				39F829011974551B00CEC72E /* blue radar 58x.png in Resources */,
 				3921C9641979D29A007C5E0E /* JSQMessagesTypingIndicatorFooterView.xib in Resources */,
@@ -1545,11 +1545,11 @@
 				3970BC2D1989978A0022DB40 /* MessageObject.m in Sources */,
 				39C7E67E1965B71C00F5F08F /* AppDelegate.m in Sources */,
 				3921C9521979D29A007C5E0E /* JSQMessagesCollectionViewFlowLayout.m in Sources */,
+				39546D08199A8833002ED20D /* LogUserInViewController.m in Sources */,
 				3937A375196AFE7500559AE9 /* NavigationController.m in Sources */,
 				3921C98E1979DE2A007C5E0E /* STTwitterOS.m in Sources */,
 				39787A9F1991906C00517C0D /* VideoObject.m in Sources */,
 				39DB04F3197204F300E80D5B /* ProfileObject.m in Sources */,
-				39DB04FB1972654400E80D5B /* CheckLoginViewController.m in Sources */,
 				3921C9671979D29A007C5E0E /* ProgressHUD.m in Sources */,
 				39606BA91982BC9900109BDC /* ChatTableViewCell.m in Sources */,
 				396EDF7C1980E48B00BE8DFD /* SlideNavigationContorllerAnimatorScale.m in Sources */,

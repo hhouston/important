@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface ChatViewController : UIViewController
-
+@property (strong, nonatomic) UIView *chatBackgroundView;
 @end

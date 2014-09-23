@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <Parse/Parse.h>
 #import <Parse/PFObject+Subclass.h>
-@interface ProfileObject : NSManagedObject
+@interface ProfileObject : NSObject
 
 @property (strong, nonatomic) NSString *chapterID;
 @property (strong, nonatomic) NSString *collegeID;

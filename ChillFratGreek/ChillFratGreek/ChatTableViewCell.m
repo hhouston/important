@@ -40,7 +40,6 @@
 //}
 
 - (void)viewDidLoad {
-    voteCounter = nil;
     
 }
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated

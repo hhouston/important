@@ -10,75 +10,11 @@
 #import <Parse/Parse.h>
 #import <GoogleMaps/GoogleMaps.h>
 #import "NavigationController.h"
-#import "HomeViewController.h"
 #import "MenuViewController.h"
-#import "LogInViewController.h"
-#import "ProfileObject.h"
-#import "CheckLoginViewController.h"
-#import "RearMasterTableViewController.h"
-#import "SWRevealViewController.h"
-#import "RightTableViewController.h"
-#import "SlideNavigationController.h"
+#import "HomeViewController.h"
+#import "LogUserInViewController.h"
 
 @implementation AppDelegate
-
-@synthesize managedObjectContext = _managedObjectContext;
-@synthesize managedObjectModel = _managedObjectModel;
-@synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
-
-// 1
-- (NSManagedObjectContext *) managedObjectContext {
-    if (_managedObjectContext != nil) {
-        return _managedObjectContext;
-    }
-    NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
-    if (coordinator != nil) {
-        _managedObjectContext = [[NSManagedObjectContext alloc] init];
-        [_managedObjectContext setPersistentStoreCoordinator: coordinator];
-    }
-    
-    return _managedObjectContext;
-}
-
-//2
-- (NSManagedObjectModel *)managedObjectModel {
-    if (_managedObjectModel != nil) {
-        return _managedObjectModel;
-    }
-    _managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
-    
-    return _managedObjectModel;
-}
-
-//3
-- (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
-    if (_persistentStoreCoordinator != nil) {
-        return _persistentStoreCoordinator;
-    }
-    
-    //NSURL *storeUrl = [NSURL fileURLWithPath: [[self applicationDocumentsDirectory] stringByAppendingPathComponent: [NSString stringWithFormat:@"%@_ProfileModel.sqlite",userID]]];
-    NSURL *storeUrl = [NSURL fileURLWithPath: [[self applicationDocumentsDirectory]
-                                               stringByAppendingPathComponent: @"ProfileModel.sqlite"]];
-    
-    NSLog(@"Core Data store path = \"%@\"", [storeUrl path]);
-
-    NSError *error = nil;
-    
-    _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc]
-                                   initWithManagedObjectModel:[self managedObjectModel]];
-    if(![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
-                                                  configuration:nil URL:storeUrl options:nil error:&error]) {
-        /*Error for store creation should be handled in here*/
-    }
-    
-    return _persistentStoreCoordinator;
-}
-
-
-
-- (NSString *)applicationDocumentsDirectory {
-    return [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {    
@@ -94,69 +30,51 @@
      UIRemoteNotificationTypeSound];
     
     
-//    if ([PFUser currentUser]) {
-//        NSLog(@"AppDelegate:logged in");
-//        ProfileObject *userData = [[ProfileObject alloc] init];
-//        PFQuery *query = [PFQuery queryWithClassName:@"_User"];
-//        NSString *userID = [PFUser currentUser].objectId;
-//        [query whereKey:@"objectID" equalTo:userID];
-//        [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-//            //self.chapterID = object[@"chapterID"];
-//            userData.chapterID = object[@"chapterID"];
-//            userData.collegeID = object[@"collegeID"];
-//            userData.userAlias = object[@"alias"];
-//            userData.avatar.image = [UIImage imageNamed:@"avatar.jpg"];
-//            userData.avatar.file = (PFFile *)object[@"avatar"];
-//            [userData.avatar loadInBackground];
-//
-//
-//        }];
-    
-    // This will get a pointer to an object that represents the app bundle
-    //self.storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
-
-    //RightTableViewController *rightMenu = [[RightTableViewController alloc ] init];
-    //[SlideNavigationController sharedInstance].rightMenu = rightMenu;
-
-    
+    if ([PFUser currentUser]) {
         
-        //    // Create content and menu controllers
-        NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:[[CheckLoginViewController alloc] init]];
+        NSLog(@"AppDelegate:logged in");
+        
+        NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:[[LogUserInViewController alloc] init]];
         MenuViewController *menuController = [[MenuViewController alloc] initWithStyle:UITableViewStylePlain];
         
-    
-    
         //    // Create frosted view controller
         REFrostedViewController *frostedViewController = [[REFrostedViewController alloc] initWithContentViewController:navigationController menuViewController:menuController];
         frostedViewController.direction = REFrostedViewControllerDirectionLeft;
         frostedViewController.liveBlurBackgroundStyle = REFrostedViewControllerLiveBackgroundStyleLight;
         frostedViewController.liveBlur = YES;
         frostedViewController.delegate = self;
-        //
-    
+            
         //    // Make it a root controller
-        //    //
         self.window.rootViewController = frostedViewController;
         self.window.backgroundColor = [UIColor whiteColor];
         [self.window makeKeyAndVisible];
-
-//        
-//    } else {
-//        
-//        NSLog(@"AppDelegate:not logged in");
-//        //LogInViewController *lvc = (LogInViewController *)[mainStoryboard instantiateViewControllerWithIdentifier:@"lvc"];
-//        self.window.rootViewController = [self.window.rootViewController.storyboard instantiateViewControllerWithIdentifier:@"lvc"];
-//        
-//    }
-
-
-
-
-
+        
+    } else {
+        //LogInViewController *lvc = (LogInViewController *)[mainStoryboard instantiateViewControllerWithIdentifier:@"lvc"];
+        self.window.rootViewController = [self.window.rootViewController.storyboard instantiateViewControllerWithIdentifier:@"lvc"];
+    }
 
     return YES;
 }
 
+- (void)application:(UIApplication *)application
+didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    // Store the deviceToken in the current installation and save it to Parse.
+    //PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    //[currentInstallation setDeviceTokenFromData:deviceToken];
+    
+    //currentInstallation.channels = @[@"global"];
+    //[currentInstallation saveInBackground];
+    [[NSUserDefaults standardUserDefaults] setObject:deviceToken forKey:@"deviceID"];
+    [[NSUserDefaults standardUserDefaults]synchronize];
+}
+
+- (void)application:(UIApplication *)application
+didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    NSLog(@"user info%@",userInfo);
+    
+    [PFPush handlePush:userInfo];
+}
 - (void)frostedViewController:(REFrostedViewController *)frostedViewController didRecognizePanGesture:(UIPanGestureRecognizer *)recognizer
 {
     
@@ -181,82 +99,7 @@
 {
     //NSLog(@"didHideMenuViewController");
 }
--(NSArray*)getProfiles
-{
-    // initializing NSFetchRequest
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    
-    //Setting Entity to be Queried
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Profile"
-                                              inManagedObjectContext:self.managedObjectContext];
-    [fetchRequest setEntity:entity];
-    NSError* error;
-    
-    // Query on managedObjectContext With Generated fetchRequest
-    NSArray *fetchedProfiles = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
-    
-    // Returning Fetched Records
-    return fetchedProfiles;
-}
 
-//- (void)application:(UIApplication *)application
-//didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)newDeviceToken {
-//    // Store the deviceToken in the current installation and save it to Parse.
-//    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-//    [currentInstallation setDeviceTokenFromData:newDeviceToken];
-//    [currentInstallation setObject:[PFUser currentUser] forKey:@"owner"];
-//    //currentInstallation.channels = @[@"global"];
-//    [currentInstallation saveInBackground];
-//}
-//Your app receives push notification.
 
-//- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
-//{
-//    //[PFPush handlePush:userInfo];
-//    
-//    UIApplicationState state = [application applicationState];
-//    
-//    // If your app is running
-//    if (state == UIApplicationStateActive)
-//    {
-//        NSLog(@"user info%@",userInfo);
-//
-//        //You need to customize your alert by yourself for this situation. For ex,
-//        NSString *cancelTitle = @"Close";
-//        //NSString *showTitle = @"Get Photos";
-//        NSString *message = [[userInfo valueForKey:@"aps"] valueForKey:@"alert"];
-//        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-//                                                            message:message
-//                                                           delegate:self
-//                                                  cancelButtonTitle:cancelTitle
-//                                                  otherButtonTitles:nil];
-//        [alertView show];
-//        
-//    }
-//    // If your app was in in active state
-//    else if (state == UIApplicationStateInactive)
-//    {
-//        
-//    }
-//}
-
-- (void)application:(UIApplication *)application
-didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-    // Store the deviceToken in the current installation and save it to Parse.
-    //PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-    //[currentInstallation setDeviceTokenFromData:deviceToken];
-    
-    //currentInstallation.channels = @[@"global"];
-    //[currentInstallation saveInBackground];
-    [[NSUserDefaults standardUserDefaults] setObject:deviceToken forKey:@"deviceID"];
-    [[NSUserDefaults standardUserDefaults]synchronize];
-}
-
-- (void)application:(UIApplication *)application
-didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    NSLog(@"user info%@",userInfo);
-
-    [PFPush handlePush:userInfo];
-}
 
 @end

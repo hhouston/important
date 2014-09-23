@@ -7,9 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <Parse/Parse.h>
 
-@interface ChatTableViewController : UITableViewController
-@property (nonatomic, strong) UITableView *chatTableview;
+@interface ChatTableViewController : UIViewController
+@property (nonatomic, strong) NSString *chapterID;
 
+@property (nonatomic, strong) UITableView *chatTableView;
 @property (nonatomic, assign) CGRect tableViewFrame;
+
+@property (nonatomic, strong) NSMutableArray *messages;
+@property (nonatomic, strong) NSMutableArray *upVotedArray;
+@property (nonatomic) CGRect resizableLable;
+
 @end

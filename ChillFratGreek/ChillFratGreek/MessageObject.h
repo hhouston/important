@@ -11,6 +11,7 @@
 @interface MessageObject : NSObject
 
 @property (strong, nonatomic) NSAttributedString *message;
+@property (strong, nonatomic) NSString *text;
 @property (strong, nonatomic) NSString *user;
 @property (strong, nonatomic) NSDate *timestamp;
 @property (assign, nonatomic) NSUInteger voteCount;
